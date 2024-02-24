@@ -29,7 +29,7 @@ const Header = () => {
           </button>
           <div className="relative hidden lg:block">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <Search size={18} />
+              <Search size={18} color="silver" />
               <span className="sr-only">Search icon</span>
             </div>
             <input
@@ -81,12 +81,8 @@ const Header = () => {
             </li>
           </ul>
         </div>
-        <div className="">
-          <ModeToggle />
-        </div>
-        <div className="">
-          <Button>Login</Button>
-        </div>
+        <ModeToggle />
+        <Button size={"sm"}>Login</Button>
         <Button
           variant={"outline"}
           className="border-none shadow-lg shadow-black/30 absolute z-10 right-2 top-[90px] bg-[#0EAB61] dark:bg-[#0EAB61] px-1 lg:hidden"

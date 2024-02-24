@@ -10,15 +10,7 @@ import Map, {
 import { useToast } from "./ui/use-toast";
 import { Button } from "./ui/button";
 import { ToastAction } from "@radix-ui/react-toast";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "./ui/drawer";
+import SaveTrackerDrawer from "./tracker-form-drawer";
 
 export default function MapBox() {
   const { toast } = useToast();
@@ -94,41 +86,7 @@ export default function MapBox() {
           <h1 className="bg-red-500 text-white p-2 text-4xl">You are here</h1>
         </Popup>
       )}
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger className="data[state]-open]:bg-red-500" asChild />
-        <DrawerContent>
-          <div className="mx-auto w-full max-w-sm">
-            <DrawerHeader>
-              <DrawerTitle>Move Goal</DrawerTitle>
-              <DrawerDescription>
-                Set your daily activity goal.
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="p-4 pb-0">
-              <div className="flex items-center justify-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 rounded-full"
-                >
-                  <span className="sr-only">Decrease</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 rounded-full"
-                >
-                  <span className="sr-only">Increase</span>
-                </Button>
-              </div>
-              <div className="mt-3 h-[120px]"></div>
-            </div>
-            <DrawerFooter>
-              <Button>Submit</Button>
-            </DrawerFooter>
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <SaveTrackerDrawer open={open} setOpen={setOpen} />
     </Map>
   );
 }
