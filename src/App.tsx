@@ -1,13 +1,13 @@
-import { ModeToggle } from "./components/mode-toggle";
-import { Button } from "./components/ui/button";
+import Layout from "./components/layout";
+import Main from "./components/main";
 
 function App() {
   return (
-    <div>
-      <ModeToggle />
-      <h1>Hello</h1>
-      <Button>Hello</Button>
-    </div>
+    <Layout>
+      <div className="w-full dark:bg-slate-800 h-[calc(100vh-128px)]">
+        <Main />
+      </div>
+    </Layout>
   );
 }
 
