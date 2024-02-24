@@ -2,9 +2,9 @@ import MapBox from "./map-box";
 
 const Main = () => {
   return (
-    <h1 className="text-8xl w-full">
+    <div className="text-8xl w-full bg-teal-300 dark:bg-slate-800 h-screen">
       <MapBox />
-    </h1>
+    </div>
   );
 };
 

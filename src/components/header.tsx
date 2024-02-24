@@ -5,8 +5,8 @@ import { Eye, Menu, Search } from "lucide-react";
 
 const Header = () => {
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10">
+      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 ">
         <div>
           {/* <SiteLogo /> */}
           <p className="flex items-center gap-4">
