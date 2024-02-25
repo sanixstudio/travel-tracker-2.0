@@ -1,7 +1,7 @@
-import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { Eye, Menu, Search } from "lucide-react";
+import logo from "@/assets/site_logo.png";
 
 const Header = () => {
   return (
