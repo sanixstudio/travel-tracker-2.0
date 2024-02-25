@@ -1,11 +1,14 @@
 import Layout from "./components/layout";
 import Main from "./components/main";
+import SearchQueryProvider from "./context/searchQueryContext";
 
 function App() {
   return (
-    <Layout>
-      <Main />
-    </Layout>
+    <SearchQueryProvider>
+      <Layout>
+        <Main />
+      </Layout>
+    </SearchQueryProvider>
   );
 }
 

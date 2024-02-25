@@ -10,8 +10,8 @@ import {
 } from "./ui/sheet";
 
 import logo from "@/assets/site_logo.png";
-import { Switch } from "@radix-ui/react-switch";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import { Switch } from "./ui/switch";
 
 const Sidebar = () => {
   return (
@@ -19,12 +19,15 @@ const Sidebar = () => {
       <div className="flex justify-center">
         <Button variant={"ghost"} className="p-2 mt-3 dark:hover:bg-slate-700">
           <Sheet>
-            <SheetTrigger asChild>
-              <Menu size={28} className="text-slate-400 dark:text-slate-400" />
+            <SheetTrigger asChild className="">
+              <Menu
+                size={28}
+                className="border text-slate-500 dark:text-slate-400"
+              />
             </SheetTrigger>
             <SheetContent side={"left"} className="flex flex-col">
               <SheetHeader>
-                <div>
+                <div className="border-b pb-6">
                   {/* <SiteLogo /> */}
                   <p className="flex items-center gap-4">
                     <img src={logo} alt="logo" className="size-8 lg:size-10" />
@@ -33,13 +36,15 @@ const Sidebar = () => {
                     </span>
                   </p>
                 </div>
-                <div className="border flex items-center space-x-2">
-                  <Switch id="airplane-mode" />
-                  <Label>Airplane Mode</Label>
+                <div className="flex items-center space-x-2 justify-between py-4">
+                  <Label>Show Trackers</Label>
+                  <Switch defaultChecked={true} id="airplane-mode" />
                 </div>
               </SheetHeader>
               <div className="flex-1">Content</div>
-              <SheetFooter>&copy;SanixStudio (2024)</SheetFooter>
+              <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500">
+                &copy;SanixStudio (2024)
+              </SheetFooter>
             </SheetContent>
             <SheetClose asChild>
               {/* Adjust button type if necessary */}
