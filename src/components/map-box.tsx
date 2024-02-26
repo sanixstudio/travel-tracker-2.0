@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Map, {
   FullscreenControl,
   GeolocateControl,
+  MapLayerMouseEvent,
   Marker,
   NavigationControl,
   Popup,
@@ -37,10 +38,7 @@ export default function MapBox() {
 
   console.log(searchResults);
 
-  const handleClick = (e: {
-    lngLat: { lat: number; lng: number };
-    Event: { lngLat: { lat: number }; long: { long: number } };
-  }) => {
+  const handleClick = (e: MapLayerMouseEvent) => {
     if (markerVisible) {
       // If marker is visible, hide it on click
       setMarkerVisible(false);
@@ -79,9 +77,7 @@ export default function MapBox() {
         latitude: 37.8,
         zoom: 14,
       }}
-      onClick={() => {
-        handleClick;
-      }}
+      onClick={handleClick}
       antialias={true}
       style={{ width: "100%", height: "100vh" }}
       mapStyle={mapStyle}

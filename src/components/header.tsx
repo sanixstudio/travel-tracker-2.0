@@ -1,27 +1,34 @@
-import React, { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Button } from "./ui/button";
 import { Eye, Menu } from "lucide-react";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
 import { useSearchQuery } from "@/context/searchQueryContext";
-import { AddressAutofill } from "@mapbox/search-js-react";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import MapboxAutocomplete from "react-mapbox-autocomplete";
+import { useTheme } from "@/theme/theme-provider";
 
 const Header = () => {
+  const { theme } = useTheme();
   const { setSearchQuery } = useSearchQuery();
   const [inputValue, setInputValue] = useState("");
+  const [selectedSuggestion] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedValue = inputValue.trim();
+    const trimmedValue = inputValue.trim() || selectedSuggestion.trim();
     if (trimmedValue) {
       setSearchQuery(trimmedValue);
       setInputValue("");
     }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
   };
+
+  console.log(inputValue);
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10">
@@ -41,16 +48,18 @@ const Header = () => {
               <span className="sr-only">Search icon</span>
             </div> */}
             <form onSubmit={handleSubmit} className="w-full">
-              <AddressAutofill accessToken={import.meta.env.VITE_MAP_BOX_TOKEN}>
-                <input
-                  name="address"
-                  placeholder="Address"
-                  onChange={handleInputChange}
-                  type="text"
-                  className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  autoComplete="address-line1"
-                />
-              </AddressAutofill>
+              <MapboxAutocomplete
+                publicKey={import.meta.env.VITE_EXTRA_KEY}
+                inputClass={`form-control search  ${
+                  theme === "dark"
+                    ? "dark-react-mapbox-ac-menu react-mapbox-ac-input-dark"
+                    : ""
+                }`}
+                onSuggestionSelect={handleInputChange}
+                country="us"
+                resetSearch={true}
+                placeholder="Search Address..."
+              />
             </form>
           </div>
         </div>
