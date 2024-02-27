@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Map, {
   FullscreenControl,
   GeolocateControl,
@@ -13,37 +13,31 @@ import { ToastAction } from "@radix-ui/react-toast";
 import SaveTrackerDrawer from "./tracker-form-drawer";
 import { useToast } from "./ui/use-toast";
 import { streetMapStyle } from "@/utils/constants";
-import useMapboxSearch from "@/hooks/getSearchLocation";
 import StyleChangeButton from "./style-change-button";
 import { useSearchQuery } from "@/context/searchQueryContext";
+import useGetSuggestions from "@/hooks/getSuggestions";
 
 export default function MapBox() {
   const mapRef = useRef(null);
   const { searchQuery } = useSearchQuery();
   const { toast } = useToast();
-  const { searchResults, loading, error } = useMapboxSearch(searchQuery);
-  console.log(searchResults, loading, error);
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyle);
   const [showPopup, setShowPopup] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
-  const [markerVisible, setMarkerVisible] = useState(false); // New state for marker visibility
+  const [markerVisible, setMarkerVisible] = useState(false);
   const [currentLocation, setCurrentLocation] = useState({
     lat: 0,
     long: 0,
   });
 
-  useEffect(() => {
-    console.log(searchResults);
-  }, [searchResults]);
+  const { searchResults, loading, error } = useGetSuggestions(searchQuery);
 
-  console.log(searchResults);
+  console.log(searchQuery,searchResults, loading, error);
 
   const handleClick = (e: MapLayerMouseEvent) => {
     if (markerVisible) {
-      // If marker is visible, hide it on click
       setMarkerVisible(false);
     } else {
-      // Show the marker and update location
       setCurrentLocation({
         lat: e.lngLat.lat,
         long: e.lngLat.lng,
@@ -87,6 +81,19 @@ export default function MapBox() {
       <FullscreenControl position="bottom-right" />
       <StyleChangeButton setMapStyle={setMapStyle} />
       <ScaleControl style={{ zIndex: 0 }} />
+      {loading && <div>Loading...</div>}
+      {error && <div>Error: {error}</div>}
+      {
+        // searchResults.map((result) => (
+        //   <Marker
+        //     key={result.id} // Assuming each result has a unique id
+        //     latitude={result.lat}
+        //     longitude={result.long}
+        //   >
+        //     {/* Your marker content */}
+        //   </Marker>
+        // ))
+      }
       {markerVisible && (
         <Marker
           color="red"
@@ -99,7 +106,7 @@ export default function MapBox() {
         <Popup
           longitude={currentLocation.long}
           latitude={currentLocation.lat}
-          anchor="top-left" // Change the anchor direction here
+          anchor="top-left"
           onClose={() => setShowPopup(false)}
         >
           <h1 className="bg-red-500 text-white p-2 text-4xl">You are here</h1>

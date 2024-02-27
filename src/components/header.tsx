@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Button } from "./ui/button";
-import { Eye, Menu } from "lucide-react";
+import { Eye } from "lucide-react";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
 import { useSearchQuery } from "@/context/searchQueryContext";
@@ -26,6 +26,7 @@ const Header = () => {
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
+    setSearchQuery(value);
   };
 
   console.log(inputValue);
@@ -85,17 +86,17 @@ const Header = () => {
         </div>
         <ModeToggle />
         <Button size={"sm"}>Login</Button>
-        <Button
+        {/* <Button
           variant={"outline"}
-          className="border-none shadow-lg shadow-black/30 absolute z-10 right-2 top-[90px] bg-[#0EAB61] dark:bg-[#0EAB61] px-1 lg:hidden"
+          className="border-none shadow-lg shadow-black/30 absolute z-10 left-2 top-[90px] bg-[#0EAB61] dark:bg-[#0EAB61] px-2 lg:hidden"
           data-collapse-toggle="navbar-search"
           type="button"
           aria-controls="navbar-search"
           aria-expanded="false"
         >
           <span className="sr-only">Open main menu</span>
-          <Menu className="size-8 text-[#] text-white" />
-        </Button>
+          <Menu className="size-6 text-[#] text-white" />
+        </Button> */}
       </div>
     </nav>
   );

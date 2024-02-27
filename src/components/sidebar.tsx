@@ -1,5 +1,4 @@
 import { Menu } from "lucide-react";
-import { Button } from "./ui/button";
 import {
   Sheet,
   SheetClose,
@@ -17,9 +16,9 @@ const Sidebar = () => {
   return (
     <div className="border-r border-slate-200 mt-[73px] dark:border-slate-700 shadow-xl z-10 w-full max-w-[70px] hidden lg:block h-[calc(100vh-70px)] bg-white dark:bg-slate-800">
       <div className="flex justify-center">
-        <Button variant={"ghost"} className="p-2 mt-3 dark:hover:bg-slate-700">
+        <div className="p-2 mt-3 dark:hover:bg-slate-700">
           <Sheet>
-            <SheetTrigger asChild className="">
+            <SheetTrigger asChild className="cursor-pointer born">
               <Menu
                 size={28}
                 className="border text-slate-500 dark:text-slate-400"
@@ -50,7 +49,7 @@ const Sidebar = () => {
               {/* Adjust button type if necessary */}
             </SheetClose>
           </Sheet>
-        </Button>
+        </div>
       </div>
     </div>
   );
