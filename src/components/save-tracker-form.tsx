@@ -1,7 +1,10 @@
+import useScreenSize from "@/hooks/getScreenSize";
 import { Star } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 const SaveTrackerForm = () => {
+  const { breakpoint } = useScreenSize();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -43,7 +46,7 @@ const SaveTrackerForm = () => {
   };
 
   return (
-    <div className="w-full max-w-[960px] mx-auto p-6 dark:bg-slate-800 rounded-md">
+    <div className="w-full max-w-[960px] mx-auto p-6 dark:bg-slate-800 rounded-md mt-2">
       <h2 className="text-lg font-semibold mb-4">Save Tracker Form</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -58,7 +61,7 @@ const SaveTrackerForm = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 border border-gray-300 dark:bg-slate-700 dark:text-white dark:border-slate-600 block w-full p-4 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 border border-gray-300 dark:bg-slate-700 dark:text-white dark:border-slate-600 block w-full p-2 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             />
           </label>
@@ -75,7 +78,6 @@ const SaveTrackerForm = () => {
               value={formData.description}
               onChange={handleChange}
               className="mt-1 border border-gray-300 dark:bg-slate-700 dark:text-white dark:border-slate-600 block w-full p-4 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              rows={3}
               required
             ></textarea>
           </label>
@@ -132,6 +134,7 @@ const SaveTrackerForm = () => {
                   onMouseLeave={() => setHoveredRating(0)}
                 >
                   <Star
+                    size={16}
                     fill={
                       star <= (hoveredRating || formData.rating)
                         ? "orange"
@@ -148,12 +151,9 @@ const SaveTrackerForm = () => {
             ))}
           </fieldset>
         </div>
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
-        >
+        <Button size={breakpoint === "xs" ? "sm" : "lg"} type="submit">
           Submit
-        </button>
+        </Button>
       </form>
     </div>
   );

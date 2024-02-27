@@ -66,7 +66,6 @@ body {
   width: auto;
   position: absolute;
   z-index: 9999;
-  background-color: #fff;
   color: #000;
   font-weight: 500;
   border-radius: 10px;
@@ -81,23 +80,27 @@ body {
 }
 
 .dark-react-mapbox-ac-menu {
-  background-color: #1f2937;
+  background: #1f2937;
 }
 
 div .react-mapbox-ac-input {
   width: 95%;
-}
-
-.react-mapbox-ac-input {
+  color: #000;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+  border-radius: 24px;
+  -webkit-border-radius: 24px;
+  -moz-border-radius: 24px;
+  -ms-border-radius: 24px;
+  -o-border-radius: 24px;
   border: none transparent;
   outline: none;
-  background: rgba(245, 245, 245, 0.5);
-  padding: 8px 12px;
-  border-radius: 7px;
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
+  padding: 8px 1.4em;
+}
+
+div .react-mapbox-ac-input-dark {
+  background: #1f2937;
+  color: #fff;
 }
 
 .react-mapbox-ac-input-dark::placeholder {
@@ -110,6 +113,11 @@ div .react-mapbox-ac-input {
   cursor: pointer;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+.is-dark {
+  background-color: #1f2937;
+  color: #fff;
 }
 
 .react-mapbox-ac-suggestion:hover {

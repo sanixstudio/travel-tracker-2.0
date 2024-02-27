@@ -1,6 +1,5 @@
 import { FormEvent, useState } from "react";
 import { Button } from "./ui/button";
-import { Eye } from "lucide-react";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
 import { useSearchQuery } from "@/context/searchQueryContext";
@@ -8,6 +7,7 @@ import { useSearchQuery } from "@/context/searchQueryContext";
 // @ts-expect-error
 import MapboxAutocomplete from "react-mapbox-autocomplete";
 import { useTheme } from "@/theme/theme-provider";
+import { User } from "lucide-react";
 
 const Header = () => {
   const { theme } = useTheme();
@@ -32,12 +32,16 @@ const Header = () => {
   console.log(inputValue);
 
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10">
-      <div className="max-w-screen-xl flex flex-wrap items-center gap-10 mx-auto p-4 ">
+    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10 h-[73px]">
+      <div className="max-w-screen-xl flex flex-wrap sm:flex-row items-center gap-3 sm:gap-6 md:gap-10 mx-auto p-4">
         <div>
-          <p className="flex items-center gap-4">
-            <img src={logo} alt="logo" className="size-8 lg:size-10" />
-            <span className="text-slate-700 dark:text-[#fff] text-xl lg:text-3xl font-bold">
+          <p className="flex items-center gap-2 sm:gap-4">
+            <img
+              src={logo}
+              alt="logo"
+              className="size-6 sm:size-8 lg:size-10"
+            />
+            <span className="text-slate-700 dark:text-[#fff] sm:text-xl lg:text-3xl font-bold">
               Travel Tracker
             </span>
           </p>
@@ -52,9 +56,7 @@ const Header = () => {
               <MapboxAutocomplete
                 publicKey={import.meta.env.VITE_EXTRA_KEY}
                 inputClass={`form-control search  ${
-                  theme === "dark"
-                    ? "dark-react-mapbox-ac-menu react-mapbox-ac-input-dark"
-                    : ""
+                  theme === "dark" ? "react-mapbox-ac-input-dark is-dark" : ""
                 }`}
                 onSuggestionSelect={handleInputChange}
                 country="us"
@@ -67,25 +69,16 @@ const Header = () => {
         <div
           className="items-center justify-between hidden w-full lg:flex lg:w-auto"
           id="navbar-search"
-        >
-          <ul className="flex items-center flex-col p-4 lg:p-0 mt-4 font-medium border border-gray-100 rounded-lg  lg:space-x-8 rtl:space-x-reverse lg:flex-row lg:mt-0 lg:border-0 dark:bg-gray-800lg:dark:bg-gray-900 dark:border-gray-700">
-            <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 lg:hover:bg-transparent lg:hover:text-blue-700 lg:p-0 lg:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                About
-              </a>
-            </li>
-            <li>
-              <Button>
-                <Eye size={22} />
-              </Button>
-            </li>
-          </ul>
+        ></div>
+        <div className="sm:flex items-center gap-4">
+          <ModeToggle />
+          <Button size={"sm"} className="hidden sm:inline-block">
+            Login
+          </Button>
+          <Button variant={"ghost"} size={"sm"} className="sm:hidden">
+            <User />
+          </Button>
         </div>
-        <ModeToggle />
-        <Button size={"sm"}>Login</Button>
         {/* <Button
           variant={"outline"}
           className="border-none shadow-lg shadow-black/30 absolute z-10 left-2 top-[90px] bg-[#0EAB61] dark:bg-[#0EAB61] px-2 lg:hidden"
