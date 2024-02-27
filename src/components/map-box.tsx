@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Map, {
   FullscreenControl,
   GeolocateControl,
   MapLayerMouseEvent,
+  MapRef,
   Marker,
   NavigationControl,
   Popup,
@@ -16,9 +17,10 @@ import { streetMapStyle } from "@/utils/constants";
 import StyleChangeButton from "./style-change-button";
 import { useSearchQuery } from "@/context/searchQueryContext";
 import useGetSuggestions from "@/hooks/getSuggestions";
+import useGetLocation from "@/hooks/getLocation";
 
 export default function MapBox() {
-  const mapRef = useRef(null);
+  const mapRef = useRef<MapRef | null>(null);
   const { searchQuery } = useSearchQuery();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyle);
@@ -31,8 +33,32 @@ export default function MapBox() {
   });
 
   const { searchResults, loading, error } = useGetSuggestions(searchQuery);
+  const {
+    searchResults: locationResults,
+    loading: locationLoading,
+    error: locationError,
+  } = useGetLocation(searchResults);
 
-  console.log(searchQuery,searchResults, loading, error);
+  const long = +locationResults[0];
+  const lat = +locationResults[1];
+
+  console.log({ long, lat });
+
+  useEffect(() => {
+    if (locationResults.length === 2) {
+      mapRef?.current?.flyTo({
+        center: [long, lat],
+        zoom: 14,
+      });
+    }
+    console.log("flying");
+  }, [lat, locationResults, long]);
+
+  useEffect(() => {
+    if (locationError) {
+      console.error("Error fetching location:", locationError);
+    }
+  }, [locationError]);
 
   const handleClick = (e: MapLayerMouseEvent) => {
     if (markerVisible) {
@@ -45,7 +71,6 @@ export default function MapBox() {
       setMarkerVisible(true);
       toast({
         duration: 2500,
-        hidden: true,
         title: "Save pin?",
         className: "dark:bg-slate-800 dark:text-white",
         action: (
@@ -83,17 +108,8 @@ export default function MapBox() {
       <ScaleControl style={{ zIndex: 0 }} />
       {loading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}
-      {
-        // searchResults.map((result) => (
-        //   <Marker
-        //     key={result.id} // Assuming each result has a unique id
-        //     latitude={result.lat}
-        //     longitude={result.long}
-        //   >
-        //     {/* Your marker content */}
-        //   </Marker>
-        // ))
-      }
+      {locationLoading && <div>Loading location...</div>}
+      {locationError && <div>Error fetching location: {locationError}</div>}
       {markerVisible && (
         <Marker
           color="red"
