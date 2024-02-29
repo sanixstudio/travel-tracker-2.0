@@ -42,7 +42,7 @@ const Sidebar = () => {
             </div>
           </SheetHeader>
           <div className="flex-1">Content</div>
-          <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500">
+          <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500 max-h-[200px] bg-red-300">
             &copy;SanixStudio (2024)
           </SheetFooter>
         </SheetContent>

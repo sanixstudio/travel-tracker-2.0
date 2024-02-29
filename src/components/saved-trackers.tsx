@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import logo from "@/assets/site_logo.png";
+import { ScrollArea } from "./ui/scroll-area";
+import useGetTrackers from "@/hooks/getTrackers";
 
 interface DropdownMenuControlsProps {
   TriggerIcon: JSX.Element;
@@ -44,6 +46,8 @@ const DropdownMenuControls: React.FC<DropdownMenuControlsProps> = ({
   );
 };
 const SavedTrackers = () => {
+  const { savedTrackers } = useGetTrackers();
+
   return (
     <div className="flex-1 mt-24 size-10 absolute top-[70px] md:top-12 left-2 md:left-4 z-20 flex justify-center items-center">
       <Sheet>
@@ -68,25 +72,29 @@ const SavedTrackers = () => {
               </p>
             </div>
           </SheetHeader>
-          <div className="flex-1">
-            <h3 className="text-lg md:text-xl font-bold text-slate-600 dark:text-slate-400 border-b pb-4">
-              Sanam's Saved Pins
-            </h3>
-            <div className="flex">
-              <div className="w-full flex justify-between items-center gap-2 py-4">
-                <img
-                  src="https://picsum.photos/id/338/300/300"
-                  alt="place"
-                  className="size-10 md:size-12 rounded-xl"
-                />
-                <span className="flex-1 text-sm md:text-base">
-                  Grand Canyon, AZ, USA
-                </span>
-                <DropdownMenuControls TriggerIcon={<MoreVertical />} />
+          <div className="flex flex-col flex-grow mt-4 max-h-[calc(100vh-240px)]">
+            <ScrollArea className="scrollable-area  overflow-y-auto">
+              <div className="flex flex-col">
+                {savedTrackers.map((tracker) => (
+                  <div
+                    key={tracker.longitude}
+                    className="w-full flex justify-between items-center gap-2 py-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
+                  >
+                    <img
+                      src={tracker.image}
+                      alt="place"
+                      className="size-10 md:size-12 rounded-xl"
+                    />
+                    <span className="flex-1 text-sm md:text-base">
+                      {tracker.title}
+                    </span>
+                    <DropdownMenuControls TriggerIcon={<MoreVertical />} />
+                  </div>
+                ))}
               </div>
-            </div>
+            </ScrollArea>
           </div>
-          <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500">
+          <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500 max-h-20">
             &copy;SanixStudio (2024)
           </SheetFooter>
         </SheetContent>

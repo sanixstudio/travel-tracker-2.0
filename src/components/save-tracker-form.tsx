@@ -1,19 +1,25 @@
-import useScreenSize from "@/hooks/getScreenSize";
-import { Star } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useUser } from "@clerk/clerk-react";
 import { Tracker } from "@/typings";
 import saveTracker from "@/utils/saveTracker";
+import { usePinLocationContext } from "@/context/pinLocationContext";
+import { Star } from "lucide-react";
+import useScreenSize from "@/hooks/getScreenSize";
+
+type FormDataWithoutLocation = Omit<Tracker, "latitude" | "longitude">;
 
 const SaveTrackerForm = ({
   setOpen,
+  onTrackerSaved,
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onTrackerSaved: () => void;
 }) => {
   const { user } = useUser();
   const { breakpoint } = useScreenSize();
-  const [formData, setFormData] = useState<Tracker>({
+  const { pinLocation } = usePinLocationContext();
+  const [formData, setFormData] = useState<FormDataWithoutLocation>({
     title: "",
     description: "",
     image: "",
@@ -40,7 +46,6 @@ const SaveTrackerForm = ({
     });
     setHoveredRating(0); // Reset hovered rating when a star is clicked
   };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -69,10 +74,18 @@ const SaveTrackerForm = ({
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    saveTracker(user?.id as string, formData);
+    const formDataWithPinLocation: Tracker = {
+      ...formData,
+      latitude: pinLocation.lat,
+      longitude: pinLocation.lng,
+    };
+    await saveTracker(user?.id as string, formDataWithPinLocation);
     setOpen(false);
+
+    // Callback function to update the list of trackers
+    onTrackerSaved();
 
     // Reset form fields
     setFormData({

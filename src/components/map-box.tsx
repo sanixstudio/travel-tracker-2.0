@@ -6,6 +6,7 @@ import Map, {
   MapRef,
   Marker,
   NavigationControl,
+  Popup,
   ScaleControl,
 } from "react-map-gl";
 import { Button } from "./ui/button";
@@ -18,18 +19,23 @@ import { useSearchQuery } from "@/context/searchQueryContext";
 import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
+import { usePinLocationContext } from "@/context/pinLocationContext";
+import useGetTrackers from "@/hooks/getTrackers";
+import { BookMarkedIcon } from "lucide-react";
 
 export default function MapBox() {
+  const { savedTrackers } = useGetTrackers();
   const mapRef = useRef<MapRef | null>(null);
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
+  const { setPinLocation } = usePinLocationContext();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyle);
   const [open, setOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
   const [currentLocation, setCurrentLocation] = useState({
     lat: 0,
-    long: 0,
+    lng: 0,
   });
 
   const { searchResults, loading, error } = useGetSuggestions(searchQuery);
@@ -39,17 +45,17 @@ export default function MapBox() {
     error: locationError,
   } = useGetLocation(searchResults);
 
-  const long = +locationResults[0];
-  const lat = +locationResults[1];
+  const lat = +locationResults[0];
+  const lng = +locationResults[1];
 
   useEffect(() => {
     if (locationResults.length === 2) {
       mapRef?.current?.flyTo({
-        center: [long, lat],
+        center: [lat, lng],
         zoom: 14,
       });
     }
-  }, [lat, locationResults, long]);
+  }, [lat, locationResults, lng]);
 
   useEffect(() => {
     if (locationError) {
@@ -61,11 +67,13 @@ export default function MapBox() {
     if (markerVisible) {
       setMarkerVisible(false);
     } else {
+      const { lat, lng } = e.lngLat;
       setCurrentLocation({
-        lat: e.lngLat.lat,
-        long: e.lngLat.lng,
+        lat,
+        lng,
       });
       setMarkerVisible(true);
+      setPinLocation({ lat, lng }); // Update pinLocation context
       toast({
         duration: 2500,
         title: "Save pin?",
@@ -90,6 +98,10 @@ export default function MapBox() {
         ),
       });
     }
+  };
+
+  const onTrackerSaved = () => {
+    setMarkerVisible(false);
   };
 
   return (
@@ -120,20 +132,24 @@ export default function MapBox() {
           color="red"
           scale={0.8}
           latitude={currentLocation.lat}
-          longitude={currentLocation.long}
+          longitude={currentLocation.lng}
         />
       )}
-      {/* {showPopup && (
+      {savedTrackers.map((tracker) => (
         <Popup
-          longitude={currentLocation.long}
-          latitude={currentLocation.lat}
+          longitude={tracker.longitude}
+          latitude={tracker.latitude}
           anchor="top-left"
-          onClose={() => setShowPopup(false)}
+          className="p-0 hover:z-20"
         >
-          <h1 className="bg-red-500 text-white p-2 text-4xl">You are here</h1>
+          <BookMarkedIcon color="red" />
         </Popup>
-      )} */}
-      <SaveTrackerDrawer open={open} setOpen={setOpen} />
+      ))}
+      <SaveTrackerDrawer
+        open={open}
+        setOpen={setOpen}
+        onTrackerSaved={onTrackerSaved}
+      />
     </Map>
   );
 }
