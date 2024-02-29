@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^4.30.6",
     "@headlessui/react": "^1.7.18",
     "@mapbox/search-js-react": "^1.0.0-beta.18",
     "@radix-ui/react-dialog": "^1.0.5",

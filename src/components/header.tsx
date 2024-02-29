@@ -1,4 +1,3 @@
-import { FormEvent, useState } from "react";
 import { Button } from "./ui/button";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
@@ -7,29 +6,17 @@ import { useSearchQuery } from "@/context/searchQueryContext";
 // @ts-expect-error
 import MapboxAutocomplete from "react-mapbox-autocomplete";
 import { useTheme } from "@/theme/theme-provider";
-import { User } from "lucide-react";
+import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 
 const Header = () => {
   const { theme } = useTheme();
   const { setSearchQuery } = useSearchQuery();
-  const [inputValue, setInputValue] = useState("");
-  const [selectedSuggestion] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedValue = inputValue.trim() || selectedSuggestion.trim();
-    if (trimmedValue) {
-      setSearchQuery(trimmedValue);
-      setInputValue("");
-    }
-  };
+  const { isSignedIn } = useUser();
 
   const handleInputChange = (value: string) => {
-    setInputValue(value);
     setSearchQuery(value);
   };
-
-  console.log(inputValue);
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10 h-[73px]">
@@ -48,21 +35,16 @@ const Header = () => {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="absolute w-full left-0 sm:left-auto top-20 md:top-4 md:flex max-w-[400px] mx-2">
-            {/* <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <Search size={18} color="silver" />
-              <span className="sr-only">Search icon</span>
-            </div> */}
-            <form onSubmit={handleSubmit} className="w-full">
+            <form className="w-full">
               <MapboxAutocomplete
                 publicKey={import.meta.env.VITE_EXTRA_KEY}
                 inputClass={`form-control search  ${
                   theme === "dark" ? "react-mapbox-ac-input-dark is-dark" : ""
                 }`}
                 onSuggestionSelect={handleInputChange}
-                country="us"
-                resetSearch={true}
+                resetSearch={false}
                 placeholder="Search Address..."
-              />
+              ></MapboxAutocomplete>
             </form>
           </div>
         </div>
@@ -70,26 +52,16 @@ const Header = () => {
           className="items-center justify-between hidden w-full lg:flex lg:w-auto"
           id="navbar-search"
         ></div>
-        <div className="sm:flex items-center gap-4">
+        <div className="flex items-center gap-8">
           <ModeToggle />
-          <Button size={"sm"} className="hidden sm:inline-block">
-            Login
-          </Button>
-          <Button variant={"ghost"} size={"sm"} className="sm:hidden">
-            <User />
-          </Button>
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <SignInButton mode="modal">
+              <Button variant={"outline"}>Sign In</Button>
+            </SignInButton>
+          )}
         </div>
-        {/* <Button
-          variant={"outline"}
-          className="border-none shadow-lg shadow-black/30 absolute z-10 left-2 top-[90px] bg-[#0EAB61] dark:bg-[#0EAB61] px-2 lg:hidden"
-          data-collapse-toggle="navbar-search"
-          type="button"
-          aria-controls="navbar-search"
-          aria-expanded="false"
-        >
-          <span className="sr-only">Open main menu</span>
-          <Menu className="size-6 text-[#] text-white" />
-        </Button> */}
       </div>
     </nav>
   );

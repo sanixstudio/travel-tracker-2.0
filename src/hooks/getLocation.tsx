@@ -18,19 +18,22 @@ const useGetLocation = (query: string) => {
     const fetchSearchResults = async (mapbox_id: string) => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `https://api.mapbox.com/search/searchbox/v1/retrieve/${mapbox_id}?session_token=[GENERATED-UUID]&access_token=${
-            import.meta.env.VITE_MAP_BOX_TOKEN
-          }`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const data = await response.json();
-        setSearchResults(data.features[0].geometry.coordinates);
+        // Introduce a delay using setTimeout
+        setTimeout(async () => {
+          const response = await fetch(
+            `https://api.mapbox.com/search/searchbox/v1/retrieve/${mapbox_id}?session_token=[GENERATED-UUID]&access_token=${
+              import.meta.env.VITE_MAP_BOX_TOKEN
+            }`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const data = await response.json();
+          setSearchResults(data.features[0].geometry.coordinates);
+          setLoading(false);
+        }, 1000); // Delay of 1000 milliseconds (1 second)
       } catch (error) {
         setError((error as Error).message); // Explicitly cast error to Error type
-      } finally {
         setLoading(false);
       }
     };

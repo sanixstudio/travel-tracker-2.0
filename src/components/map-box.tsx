@@ -6,7 +6,6 @@ import Map, {
   MapRef,
   Marker,
   NavigationControl,
-  Popup,
   ScaleControl,
 } from "react-map-gl";
 import { Button } from "./ui/button";
@@ -18,13 +17,14 @@ import StyleChangeButton from "./style-change-button";
 import { useSearchQuery } from "@/context/searchQueryContext";
 import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
+import { SignInButton, useUser } from "@clerk/clerk-react";
 
 export default function MapBox() {
   const mapRef = useRef<MapRef | null>(null);
+  const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyle);
-  const [showPopup, setShowPopup] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
   const [currentLocation, setCurrentLocation] = useState({
@@ -42,8 +42,6 @@ export default function MapBox() {
   const long = +locationResults[0];
   const lat = +locationResults[1];
 
-  console.log({ long, lat });
-
   useEffect(() => {
     if (locationResults.length === 2) {
       mapRef?.current?.flyTo({
@@ -51,7 +49,6 @@ export default function MapBox() {
         zoom: 14,
       });
     }
-    console.log("flying");
   }, [lat, locationResults, long]);
 
   useEffect(() => {
@@ -75,7 +72,15 @@ export default function MapBox() {
         className: "dark:bg-slate-800 dark:text-white",
         action: (
           <div className="flex gap-2">
-            <Button onClick={() => setOpen(true)}>Yes</Button>
+            {isSignedIn ? (
+              <Button onClick={() => setOpen(true)}>Yes</Button>
+            ) : (
+              <SignInButton mode="modal">
+                <span className="p-2 px-4 border block bg-primary rounded-md cursor-pointer hover:bg-primary/80 transition-all duration-300">
+                  Yes
+                </span>
+              </SignInButton>
+            )}
             <Button variant={"destructive"} className=" px-0">
               <ToastAction altText="Cancel" className="p-2">
                 Cancel
@@ -118,7 +123,7 @@ export default function MapBox() {
           longitude={currentLocation.long}
         />
       )}
-      {showPopup && (
+      {/* {showPopup && (
         <Popup
           longitude={currentLocation.long}
           latitude={currentLocation.lat}
@@ -127,7 +132,7 @@ export default function MapBox() {
         >
           <h1 className="bg-red-500 text-white p-2 text-4xl">You are here</h1>
         </Popup>
-      )}
+      )} */}
       <SaveTrackerDrawer open={open} setOpen={setOpen} />
     </Map>
   );

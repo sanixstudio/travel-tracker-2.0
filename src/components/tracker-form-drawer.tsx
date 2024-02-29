@@ -15,7 +15,7 @@ const SaveTrackerDrawer: React.FC<SaveTrackerDrawerProps> = ({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger className="data[state]-open]:bg-red-500" asChild />
       <DrawerContent>
-        <SaveTrackerForm />
+        <SaveTrackerForm setOpen={setOpen} />
       </DrawerContent>
     </Drawer>
   );

@@ -2,14 +2,23 @@ import useScreenSize from "@/hooks/getScreenSize";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { useUser } from "@clerk/clerk-react";
+import { Tracker } from "@/typings";
+import saveTracker from "@/utils/saveTracker";
 
-const SaveTrackerForm = () => {
+const SaveTrackerForm = ({
+  setOpen,
+}: {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { user } = useUser();
   const { breakpoint } = useScreenSize();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Tracker>({
     title: "",
     description: "",
     image: "",
     rating: 0,
+    userId: user?.id,
   });
 
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -32,17 +41,47 @@ const SaveTrackerForm = () => {
     setHoveredRating(0); // Reset hovered rating when a star is clicked
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        // Upload image to Cloudinary
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "b07ggq5m"); // Replace with your Cloudinary upload preset
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${
+            import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+          }/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const data = await response.json();
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          image: data.secure_url,
+        }));
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Here you can submit the form data, for example, sending it to an API or storing it in local storage.
+    saveTracker(user?.id as string, formData);
+    setOpen(false);
+
     // Reset form fields
     setFormData({
       title: "",
       description: "",
       image: "",
       rating: 0,
+      userId: undefined,
     });
-    console.log(formData);
   };
 
   return (
@@ -92,14 +131,7 @@ const SaveTrackerForm = () => {
               type="file"
               id="image"
               accept="image/*"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setFormData({
-                    ...formData,
-                    image: URL.createObjectURL(e.target.files[0]),
-                  });
-                }
-              }}
+              onChange={handleFileChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             />

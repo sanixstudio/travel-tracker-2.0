@@ -22,7 +22,7 @@ export const useSearchQuery = () => {
 
 // Provider component for the SearchQueryContext
 const SearchQueryProvider = ({ children }: { children: React.ReactNode }) => {
-  const [searchQuery, setSearchQuery] = useState<string>("new york");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   return (
     <SearchQueryContext.Provider value={{ searchQuery, setSearchQuery }}>
