@@ -22,10 +22,12 @@ import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
 import { usePinLocationContext } from "@/context/pinLocationContext";
 import { useFlyToLocationContext } from "@/context/flyToLocation";
-import { Pin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import useGetTrackers from "@/hooks/getTrackers";
 
 const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
+  const { savedTrackers } = useGetTrackers();
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
   const { pinLocation, setPinLocation } = usePinLocationContext();
@@ -33,12 +35,17 @@ const MapBox = () => {
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
+  // TODOUse Better State management for this
+  const [showSavedPins] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, setCurrentLocation] = useState({ lat: 0, lng: 0 });
 
   const { flyToLocation, setFlyToLocation } = useFlyToLocationContext();
 
-  const { searchResults, error: suggestionsError } = useGetSuggestions(searchQuery);
-  const { searchResults: locationResults, error: locationError } = useGetLocation(searchResults);
+  const { searchResults, error: suggestionsError } =
+    useGetSuggestions(searchQuery);
+  const { searchResults: locationResults, error: locationError } =
+    useGetLocation(searchResults);
 
   useEffect(() => {
     if (locationResults.length === 2) {
@@ -58,9 +65,10 @@ const MapBox = () => {
 
   const handleClick = (e: MapLayerMouseEvent) => {
     const { lat, lng } = e.lngLat;
-    setMarkerVisible(prevState => !prevState);
+    setMarkerVisible((prevState) => !prevState);
     setCurrentLocation({ lat, lng });
     setPinLocation({ lat, lng });
+
     if (!markerVisible) {
       toast({
         duration: 2500,
@@ -132,8 +140,8 @@ const MapBox = () => {
           scale={0.8}
           draggable={true}
           onDrag={onMarkerDrag}
-          latitude={currentLocation.lat}
-          longitude={currentLocation.lng}
+          latitude={pinLocation.lat}
+          longitude={pinLocation.lng}
           clickTolerance={3}
         />
       )}
@@ -142,18 +150,21 @@ const MapBox = () => {
         setOpen={setDrawerOpen}
         onTrackerSaved={onTrackerSaved}
       />
-      {
-        <Popup
-          children={<Pin fill="red" />}
-          latitude={pinLocation.lat}
-          longitude={pinLocation.lng}
-          className="p-0 bg-transparent flex justify-center items-center"
-          closeButton={false}
-          closeOnClick={false}
-        ></Popup>
-      }
+      {showSavedPins &&
+        savedTrackers.length > 0 &&
+        savedTrackers.map((tracker, i) => (
+          <Popup
+            key={i}
+            children={<MapPin fill="red" />}
+            latitude={tracker.latitude}
+            longitude={tracker.longitude}
+            className="p-0 bg-transparent flex justify-center items-center"
+            closeButton={false}
+            closeOnClick={false}
+          ></Popup>
+        ))}
     </Map>
   );
-}
+};
 
 export default MapBox;

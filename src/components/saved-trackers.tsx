@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo } from "react";
 import { Bookmark, MoreVertical, Pin, Share2, XCircle } from "lucide-react";
 import {
   Sheet,

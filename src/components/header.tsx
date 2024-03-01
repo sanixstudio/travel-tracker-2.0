@@ -35,7 +35,10 @@ const Header = () => {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="absolute w-full left-0 sm:left-auto top-20 md:top-4 md:flex max-w-[400px] mx-2">
-            <form className="w-full">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="w-full relative"
+            >
               <MapboxAutocomplete
                 publicKey={import.meta.env.VITE_EXTRA_KEY}
                 inputClass={`form-control search  ${
