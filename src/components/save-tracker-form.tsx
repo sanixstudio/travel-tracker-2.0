@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useUser } from "@clerk/clerk-react";
@@ -20,6 +21,7 @@ const SaveTrackerForm = ({
   const { breakpoint } = useScreenSize();
   const { pinLocation } = usePinLocationContext();
   const [formData, setFormData] = useState<FormDataWithoutLocation>({
+    id: undefined,
     title: "",
     description: "",
     image: "",
@@ -78,6 +80,7 @@ const SaveTrackerForm = ({
     event.preventDefault();
     const formDataWithPinLocation: Tracker = {
       ...formData,
+      id: uuidv4(),
       latitude: pinLocation.lat,
       longitude: pinLocation.lng,
     };
@@ -89,6 +92,7 @@ const SaveTrackerForm = ({
 
     // Reset form fields
     setFormData({
+      id: undefined,
       title: "",
       description: "",
       image: "",

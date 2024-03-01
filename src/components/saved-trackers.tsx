@@ -1,11 +1,11 @@
+import React, { useState, useCallback, memo } from "react";
 import { Bookmark, MoreVertical, Pin, Share2, XCircle } from "lucide-react";
 import {
   Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
   SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
 } from "./ui/sheet";
 import {
   DropdownMenu,
@@ -14,41 +14,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
 import { useFlyToLocationContext } from "@/context/flyToLocation";
-import { useState } from "react";
 import { usePinLocationContext } from "@/context/pinLocationContext";
 
-interface DropdownMenuControlsProps {
-  TriggerIcon: JSX.Element;
-}
-
-const DropdownMenuControls: React.FC<DropdownMenuControlsProps> = ({
-  TriggerIcon,
-}) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>{TriggerIcon}</DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
-          <Pin className="size-5" />
-          Show on Map
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
-          <Share2 className="size-5" />
-          Share Pin
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
-          <XCircle className="size-5" />
-          Delete Pin
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
+const DropdownMenuControls = memo(
+  ({ TriggerIcon }: { TriggerIcon: JSX.Element }) => {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>{TriggerIcon}</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
+            <Pin className="size-5" />
+            Show on Map
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
+            <Share2 className="size-5" />
+            Share Pin
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
+            <XCircle className="size-5" />
+            Delete Pin
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+);
 
 const SavedTrackers = () => {
   const [open, setIsOpen] = useState(false);
@@ -56,11 +50,14 @@ const SavedTrackers = () => {
   const { setFlyToLocation } = useFlyToLocationContext();
   const { setPinLocation } = usePinLocationContext();
 
-  const handleFlyToLocation = ({ lat, lng }: { lat: number; lng: number }) => {
-    setFlyToLocation({ lat, lng });
-    setPinLocation({ lat, lng });
-    setIsOpen(false);
-  };
+  const handleFlyToLocation = useCallback(
+    ({ lat, lng }: { lat: number; lng: number }) => {
+      setFlyToLocation({ lat, lng });
+      setPinLocation({ lat, lng });
+      setIsOpen(false);
+    },
+    [setFlyToLocation, setPinLocation]
+  );
 
   return (
     <div className="flex-1 mt-24 size-10 absolute top-[70px] md:top-12 left-2 md:left-4 z-20 flex justify-center items-center">
@@ -82,39 +79,36 @@ const SavedTrackers = () => {
               </p>
             </div>
           </SheetHeader>
-          <div className="flex flex-col flex-grow mt-4 max-h-[calc(100vh-240px)]">
-            <ScrollArea className="scrollable-area  overflow-y-auto">
-              <div className="flex flex-col">
-                {savedTrackers.map((tracker) => (
-                  <div
-                    onClick={() =>
-                      handleFlyToLocation({
-                        lat: tracker.latitude,
-                        lng: tracker.longitude,
-                      })
-                    }
-                    key={tracker.longitude}
-                    className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
-                  >
-                    <img
-                      src={tracker.image}
-                      alt="pin-image"
-                      className="size-10 md:size-12 rounded-xl object-contain"
-                    />
-                    <span className="flex-1 text-sm md:text-base">
-                      {tracker.title}
-                    </span>
-                    <DropdownMenuControls TriggerIcon={<MoreVertical />} />
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+          <ScrollArea className="scrollable-area overflow-y-auto">
+            <div className="flex flex-col">
+              {savedTrackers.map((tracker, index) => (
+                <div
+                  onClick={() =>
+                    handleFlyToLocation({
+                      lat: tracker.latitude,
+                      lng: tracker.longitude,
+                    })
+                  }
+                  key={tracker.id || `tracker-${index}`} // Prefer a unique ID, fallback to index
+                  className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
+                >
+                  <img
+                    src={tracker.image}
+                    alt="pin-image"
+                    className="size-10 md:size-12 rounded-xl object-contain"
+                  />
+                  <span className="flex-1 text-sm md:text-base">
+                    {tracker.title}
+                  </span>
+                  <DropdownMenuControls TriggerIcon={<MoreVertical />} />
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
           <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500 max-h-20">
             &copy;SanixStudio (2024)
           </SheetFooter>
         </SheetContent>
-        <SheetClose asChild>{/* Adjust button type if necessary */}</SheetClose>
       </Sheet>
     </div>
   );
