@@ -3,7 +3,9 @@ import { db } from "@/lib/firebase";
 import { ref, onValue } from "firebase/database";
 
 const getTrackers = async (userId: string | undefined) => {
-  console.log(userId);
+  if (!userId) {
+    console.log("no userId");
+  }
 
   return new Promise((resolve, reject) => {
     try {

@@ -1,4 +1,4 @@
-import { Bookmark, MoreVertical, Share2, XCircle } from "lucide-react";
+import { Bookmark, MoreVertical, Pin, Share2, XCircle } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -11,12 +11,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import logo from "@/assets/site_logo.png";
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
 
@@ -31,13 +29,16 @@ const DropdownMenuControls: React.FC<DropdownMenuControlsProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger>{TriggerIcon}</DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
+          <Pin className="size-5" />
+          Show on Map
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="flex items-center gap-2 text-slate-500 dark:text-slate-400 cursor-pointer">
+        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
           <Share2 className="size-5" />
           Share Pin
         </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2 text-slate-500 dark:text-slate-400 cursor-pointer">
+        <DropdownMenuItem className="flex items-center gap-2 text-slate-700 dark:text-slate-400 cursor-pointer">
           <XCircle className="size-5" />
           Delete Pin
         </DropdownMenuItem>
@@ -61,13 +62,9 @@ const SavedTrackers = () => {
           <SheetHeader>
             <div className="border-b pb-4">
               <p className="flex items-center gap-2 sm:gap-4">
-                <img
-                  src={logo}
-                  alt="logo"
-                  className="size-6 sm:size-8 lg:size-10"
-                />
-                <span className="text-slate-700 dark:text-[#fff] sm:text-xl lg:text-3xl font-bold">
-                  Travel Tracker
+                <Pin color="#EE3616" fill="#EE3616" />
+                <span className="text-slate-700 dark:text-[#fff] sm:text-xl lg:text-2xl font-bold">
+                  Saved Pins
                 </span>
               </p>
             </div>
@@ -78,12 +75,12 @@ const SavedTrackers = () => {
                 {savedTrackers.map((tracker) => (
                   <div
                     key={tracker.longitude}
-                    className="w-full flex justify-between items-center gap-2 py-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
+                    className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
                   >
                     <img
                       src={tracker.image}
-                      alt="place"
-                      className="size-10 md:size-12 rounded-xl"
+                      alt="pin-image"
+                      className="size-10 md:size-12 rounded-xl object-contain"
                     />
                     <span className="flex-1 text-sm md:text-base">
                       {tracker.title}

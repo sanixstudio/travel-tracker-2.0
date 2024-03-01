@@ -133,3 +133,31 @@ div .react-mapbox-ac-input-dark:focus {
   background-color: #6d28d9;
   color: #fff;
 }
+
+/* .pin {} */
+
+.pin > div:last-child {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 50%;
+}
+
+.popup-container {
+  position: relative;
+}
+
+.popup-title {
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  max-width: 200px; /* Adjust as needed */
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust as needed */
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.pin {
+  fill: #ee3616; /* Adjust as needed */
+}

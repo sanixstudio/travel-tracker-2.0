@@ -6,31 +6,29 @@ import Map, {
   MapRef,
   Marker,
   NavigationControl,
-  Popup,
   ScaleControl,
 } from "react-map-gl";
 import { Button } from "./ui/button";
 import { ToastAction } from "@radix-ui/react-toast";
 import SaveTrackerDrawer from "./tracker-form-drawer";
 import { useToast } from "./ui/use-toast";
-import { streetMapStyle } from "@/utils/constants";
+import { streetMapStyleV12 } from "@/utils/constants";
 import StyleChangeButton from "./style-change-button";
 import { useSearchQuery } from "@/context/searchQueryContext";
 import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
 import { usePinLocationContext } from "@/context/pinLocationContext";
-import useGetTrackers from "@/hooks/getTrackers";
-import { BookMarkedIcon } from "lucide-react";
+// import useGetTrackers from "@/hooks/getTrackers";
 
 export default function MapBox() {
-  const { savedTrackers } = useGetTrackers();
+  // const { savedTrackers } = useGetTrackers();
   const mapRef = useRef<MapRef | null>(null);
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
   const { setPinLocation } = usePinLocationContext();
   const { toast } = useToast();
-  const [mapStyle, setMapStyle] = useState<string>(streetMapStyle);
+  const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [open, setOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
   const [currentLocation, setCurrentLocation] = useState({
@@ -135,16 +133,26 @@ export default function MapBox() {
           longitude={currentLocation.lng}
         />
       )}
-      {savedTrackers.map((tracker) => (
+      {/* {savedTrackers.map((tracker) => (
         <Popup
+          closeOnClick={false}
+          focusAfterOpen={false}
           longitude={tracker.longitude}
           latitude={tracker.latitude}
-          anchor="top-left"
-          className="p-0 hover:z-20"
+          anchor="center"
+          className="pin relative"
+          closeButton={false}
         >
-          <BookMarkedIcon color="red" />
+          <div className="group relative">
+            <div className="absolute hidden group-hover:block left-0 bottom-4 w-[200px] h-full z-10 bg-black/50">
+              <span className="text-white text-center font-bold w-full block">
+                Title of the Pin
+              </span>
+            </div>
+          </div>
+          <Pin fill="#EE3616" className="text-[#EE3616]" />
         </Popup>
-      ))}
+      ))} */}
       <SaveTrackerDrawer
         open={open}
         setOpen={setOpen}

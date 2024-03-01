@@ -1,7 +1,7 @@
 import { useState } from "react";
 import street from "../assets/street.png";
 import satellite from "../assets/satellite.png";
-import { satelliteMapStyle, streetMapStyle } from "@/utils/constants";
+import { satelliteMapStyle, streetMapStyleV12 } from "@/utils/constants";
 import { Layers } from "lucide-react";
 
 const StyleChangeButton = ({
@@ -20,11 +20,10 @@ const StyleChangeButton = ({
       <div className="size-[42px] relative rounded-[10px]">
         <Layers
           color="white"
-          onClick={() => setMapStyle(streetMapStyle)}
           className="absolute z-10 rounded-[10px] p-2 top-0 left-0 bg-primary cursor-pointer size-10 ring-2 ring-gray-400"
         />
         <div
-          onClick={() => setMapStyle(streetMapStyle)}
+          onClick={() => setMapStyle(streetMapStyleV12)}
           className={`size-[42px] absolute top-0 right-0 shadow-md cursor-pointer ${
             isHovered ? "left-[49px]" : "left-0 top-0"
           } transition-all duration-300`}
