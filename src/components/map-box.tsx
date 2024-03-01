@@ -5,6 +5,7 @@ import Map, {
   MapLayerMouseEvent,
   MapRef,
   Marker,
+  MarkerDragEvent,
   NavigationControl,
   ScaleControl,
 } from "react-map-gl";
@@ -19,10 +20,9 @@ import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
 import { usePinLocationContext } from "@/context/pinLocationContext";
-// import useGetTrackers from "@/hooks/getTrackers";
+import { useFlyToLocationContext } from "@/context/flyToLocation";
 
 export default function MapBox() {
-  // const { savedTrackers } = useGetTrackers();
   const mapRef = useRef<MapRef | null>(null);
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
@@ -36,24 +36,19 @@ export default function MapBox() {
     lng: 0,
   });
 
-  const { searchResults, loading, error } = useGetSuggestions(searchQuery);
-  const {
-    searchResults: locationResults,
-    loading: locationLoading,
-    error: locationError,
-  } = useGetLocation(searchResults);
+  const { flyToLocation, setFlyToLocation } = useFlyToLocationContext();
 
-  const lat = +locationResults[0];
-  const lng = +locationResults[1];
+  const { searchResults } = useGetSuggestions(searchQuery);
+  const { searchResults: locationResults, error: locationError } =
+    useGetLocation(searchResults);
 
   useEffect(() => {
     if (locationResults.length === 2) {
-      mapRef?.current?.flyTo({
-        center: [lat, lng],
-        zoom: 14,
-      });
+      const lat = +locationResults[0];
+      const lng = +locationResults[1];
+      setFlyToLocation((prevState) => ({ ...prevState, lat, lng }));
     }
-  }, [lat, locationResults, lng]);
+  }, [locationResults, setFlyToLocation]);
 
   useEffect(() => {
     if (locationError) {
@@ -66,12 +61,9 @@ export default function MapBox() {
       setMarkerVisible(false);
     } else {
       const { lat, lng } = e.lngLat;
-      setCurrentLocation({
-        lat,
-        lng,
-      });
+      setCurrentLocation({ lat, lng });
       setMarkerVisible(true);
-      setPinLocation({ lat, lng }); // Update pinLocation context
+      setPinLocation({ lat, lng });
       toast({
         duration: 2500,
         title: "Save pin?",
@@ -87,7 +79,7 @@ export default function MapBox() {
                 </span>
               </SignInButton>
             )}
-            <Button variant={"destructive"} className=" px-0">
+            <Button variant={"destructive"} className="px-0">
               <ToastAction altText="Cancel" className="p-2">
                 Cancel
               </ToastAction>
@@ -98,9 +90,22 @@ export default function MapBox() {
     }
   };
 
+  const onMarkerDrag = (e: MarkerDragEvent) => {
+    const { lat, lng } = e.lngLat;
+    setPinLocation({ lat, lng });
+  };
+
   const onTrackerSaved = () => {
     setMarkerVisible(false);
   };
+
+  useEffect(() => {
+    mapRef.current?.flyTo({
+      center: [flyToLocation.lng, flyToLocation.lat],
+      zoom: 14,
+      duration: 1000,
+    });
+  }, [flyToLocation.lat, flyToLocation.lng]);
 
   return (
     <Map
@@ -121,38 +126,17 @@ export default function MapBox() {
       <FullscreenControl position="bottom-right" />
       <StyleChangeButton setMapStyle={setMapStyle} />
       <ScaleControl style={{ zIndex: 0 }} />
-      {loading && <div>Loading...</div>}
-      {error && <div>Error: {error}</div>}
-      {locationLoading && <div>Loading location...</div>}
-      {locationError && <div>Error fetching location: {locationError}</div>}
       {markerVisible && (
         <Marker
           color="red"
           scale={0.8}
+          draggable={true}
+          onDrag={onMarkerDrag}
           latitude={currentLocation.lat}
           longitude={currentLocation.lng}
+          clickTolerance={3}
         />
       )}
-      {/* {savedTrackers.map((tracker) => (
-        <Popup
-          closeOnClick={false}
-          focusAfterOpen={false}
-          longitude={tracker.longitude}
-          latitude={tracker.latitude}
-          anchor="center"
-          className="pin relative"
-          closeButton={false}
-        >
-          <div className="group relative">
-            <div className="absolute hidden group-hover:block left-0 bottom-4 w-[200px] h-full z-10 bg-black/50">
-              <span className="text-white text-center font-bold w-full block">
-                Title of the Pin
-              </span>
-            </div>
-          </div>
-          <Pin fill="#EE3616" className="text-[#EE3616]" />
-        </Popup>
-      ))} */}
       <SaveTrackerDrawer
         open={open}
         setOpen={setOpen}

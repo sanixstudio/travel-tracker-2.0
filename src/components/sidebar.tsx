@@ -24,18 +24,18 @@ const Sidebar = () => {
         </SheetTrigger>
         <SheetContent side={"left"} className="flex flex-col">
           <SheetHeader>
-          <div>
-          <p className="flex items-center gap-2 sm:gap-4">
-            <img
-              src={logo}
-              alt="logo"
-              className="size-6 sm:size-8 lg:size-10"
-            />
-            <span className="text-slate-700 dark:text-[#fff] sm:text-xl lg:text-3xl font-bold">
-              Travel Tracker
-            </span>
-          </p>
-        </div>
+            <div>
+              <p className="flex items-center gap-2 sm:gap-4">
+                <img
+                  src={logo}
+                  alt="logo"
+                  className="size-6 sm:size-8 lg:size-10"
+                />
+                <span className="text-slate-700 dark:text-[#fff] sm:text-xl lg:text-3xl font-bold">
+                  Travel Tracker
+                </span>
+              </p>
+            </div>
             <div className="flex items-center space-x-2 justify-between py-4">
               <Label>Show Trackers</Label>
               <Switch defaultChecked={true} id="airplane-mode" />

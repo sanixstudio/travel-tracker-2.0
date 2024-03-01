@@ -17,6 +17,8 @@ import {
 
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
+import { useFlyToLocationContext } from "@/context/flyToLocation";
+import { useState } from "react";
 
 interface DropdownMenuControlsProps {
   TriggerIcon: JSX.Element;
@@ -46,12 +48,20 @@ const DropdownMenuControls: React.FC<DropdownMenuControlsProps> = ({
     </DropdownMenu>
   );
 };
+
 const SavedTrackers = () => {
+  const [open, setIsOpen] = useState(false);
   const { savedTrackers } = useGetTrackers();
+  const { setFlyToLocation } = useFlyToLocationContext();
+
+  const handleFlyToLocation = ({ lat, lng }: { lat: number; lng: number }) => {
+    setFlyToLocation({ lat, lng });
+    setIsOpen(false);
+  };
 
   return (
     <div className="flex-1 mt-24 size-10 absolute top-[70px] md:top-12 left-2 md:left-4 z-20 flex justify-center items-center">
-      <Sheet>
+      <Sheet open={open} onOpenChange={() => setIsOpen(!open)}>
         <SheetTrigger asChild className="cursor-pointer">
           <Bookmark
             size={32}
@@ -74,6 +84,12 @@ const SavedTrackers = () => {
               <div className="flex flex-col">
                 {savedTrackers.map((tracker) => (
                   <div
+                    onClick={() =>
+                      handleFlyToLocation({
+                        lat: tracker.latitude,
+                        lng: tracker.longitude,
+                      })
+                    }
                     key={tracker.longitude}
                     className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
                   >
