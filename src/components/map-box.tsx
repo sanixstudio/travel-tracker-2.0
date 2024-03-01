@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Map, {
   FullscreenControl,
   GeolocateControl,
@@ -12,7 +12,7 @@ import Map, {
 } from "react-map-gl";
 import { Button } from "./ui/button";
 import { ToastAction } from "@radix-ui/react-toast";
-import SaveTrackerDrawer from "./tracker-form-drawer";
+const SaveTrackerDrawer = React.lazy(() => import("./tracker-form-drawer"));
 import { useToast } from "./ui/use-toast";
 import { streetMapStyleV12 } from "@/utils/constants";
 import StyleChangeButton from "./style-change-button";
@@ -24,48 +24,44 @@ import { usePinLocationContext } from "@/context/pinLocationContext";
 import { useFlyToLocationContext } from "@/context/flyToLocation";
 import { Pin } from "lucide-react";
 
-export default function MapBox() {
+const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
   const { pinLocation, setPinLocation } = usePinLocationContext();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
-  const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState({
-    lat: 0,
-    lng: 0,
-  });
+  const [currentLocation, setCurrentLocation] = useState({ lat: 0, lng: 0 });
 
   const { flyToLocation, setFlyToLocation } = useFlyToLocationContext();
 
-  const { searchResults } = useGetSuggestions(searchQuery);
-  const { searchResults: locationResults, error: locationError } =
-    useGetLocation(searchResults);
+  const { searchResults, error: suggestionsError } = useGetSuggestions(searchQuery);
+  const { searchResults: locationResults, error: locationError } = useGetLocation(searchResults);
 
   useEffect(() => {
     if (locationResults.length === 2) {
-      const lat = +locationResults[1];
-      const lng = +locationResults[0];
+      const [lng, lat] = locationResults.map(Number);
       setFlyToLocation((prevState) => ({ ...prevState, lat, lng }));
     }
   }, [locationResults, setFlyToLocation]);
 
   useEffect(() => {
+    if (suggestionsError) {
+      console.error("Error fetching suggestions:", suggestionsError);
+    }
     if (locationError) {
       console.error("Error fetching location:", locationError);
     }
-  }, [locationError]);
+  }, [suggestionsError, locationError]);
 
   const handleClick = (e: MapLayerMouseEvent) => {
-    if (markerVisible) {
-      setMarkerVisible(false);
-    } else {
-      const { lat, lng } = e.lngLat;
-      setCurrentLocation({ lat, lng });
-      setMarkerVisible(true);
-      setPinLocation({ lat, lng });
+    const { lat, lng } = e.lngLat;
+    setMarkerVisible(prevState => !prevState);
+    setCurrentLocation({ lat, lng });
+    setPinLocation({ lat, lng });
+    if (!markerVisible) {
       toast({
         duration: 2500,
         title: "Save pin?",
@@ -73,7 +69,7 @@ export default function MapBox() {
         action: (
           <div className="flex gap-2">
             {isSignedIn ? (
-              <Button onClick={() => setOpen(true)}>Yes</Button>
+              <Button onClick={() => setDrawerOpen(true)}>Yes</Button>
             ) : (
               <SignInButton mode="modal">
                 <span className="p-2 px-4 border block bg-primary rounded-md cursor-pointer hover:bg-primary/80 transition-all duration-300">
@@ -99,6 +95,8 @@ export default function MapBox() {
 
   const onTrackerSaved = () => {
     setMarkerVisible(false);
+    setDrawerOpen(false);
+    setPinLocation({ lat: 0, lng: 0 });
   };
 
   useEffect(() => {
@@ -140,8 +138,8 @@ export default function MapBox() {
         />
       )}
       <SaveTrackerDrawer
-        open={open}
-        setOpen={setOpen}
+        open={drawerOpen}
+        setOpen={setDrawerOpen}
         onTrackerSaved={onTrackerSaved}
       />
       {
@@ -157,3 +155,5 @@ export default function MapBox() {
     </Map>
   );
 }
+
+export default MapBox;
