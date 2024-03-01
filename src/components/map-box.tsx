@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import Map, {
+import {
   FullscreenControl,
   GeolocateControl,
+  Map,
   MapLayerMouseEvent,
   MapRef,
   Marker,
@@ -16,21 +17,23 @@ const SaveTrackerDrawer = React.lazy(() => import("./tracker-form-drawer"));
 import { useToast } from "./ui/use-toast";
 import { streetMapStyleV12 } from "@/utils/constants";
 import StyleChangeButton from "./style-change-button";
-import { useSearchQuery } from "@/context/searchQueryContext";
 import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
-import { usePinLocationContext } from "@/context/pinLocationContext";
-import { useFlyToLocationContext } from "@/context/flyToLocation";
 import { MapPin } from "lucide-react";
 import useGetTrackers from "@/hooks/getTrackers";
+import {
+  useFlyToLocation,
+  usePinLocation,
+  useSearchQuery,
+  useSetFlyToLocation,
+  useSetPinLocation,
+} from "@/store/store";
 
 const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
   const { savedTrackers } = useGetTrackers();
   const { isSignedIn } = useUser();
-  const { searchQuery } = useSearchQuery();
-  const { pinLocation, setPinLocation } = usePinLocationContext();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -40,7 +43,11 @@ const MapBox = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, setCurrentLocation] = useState({ lat: 0, lng: 0 });
 
-  const { flyToLocation, setFlyToLocation } = useFlyToLocationContext();
+  const searchQuery = useSearchQuery();
+  const pinLocation = usePinLocation();
+  const setPinLocation = useSetPinLocation();
+  const flyToLocation = useFlyToLocation();
+  const setFlyToLocation = useSetFlyToLocation();
 
   const { searchResults, error: suggestionsError } =
     useGetSuggestions(searchQuery);
@@ -50,7 +57,7 @@ const MapBox = () => {
   useEffect(() => {
     if (locationResults.length === 2) {
       const [lng, lat] = locationResults.map(Number);
-      setFlyToLocation((prevState) => ({ ...prevState, lat, lng }));
+      setFlyToLocation(lat, lng);
     }
   }, [locationResults, setFlyToLocation]);
 
@@ -67,7 +74,7 @@ const MapBox = () => {
     const { lat, lng } = e.lngLat;
     setMarkerVisible((prevState) => !prevState);
     setCurrentLocation({ lat, lng });
-    setPinLocation({ lat, lng });
+    setPinLocation(lat, lng);
 
     if (!markerVisible) {
       toast({
@@ -98,13 +105,15 @@ const MapBox = () => {
 
   const onMarkerDrag = (e: MarkerDragEvent) => {
     const { lat, lng } = e.lngLat;
-    setPinLocation({ lat, lng });
+    setPinLocation(lat, lng);
   };
 
   const onTrackerSaved = () => {
     setMarkerVisible(false);
     setDrawerOpen(false);
-    setPinLocation({ lat: 0, lng: 0 });
+    const lat = 0;
+    const lng = 0;
+    setPinLocation(lat, lng);
   };
 
   useEffect(() => {

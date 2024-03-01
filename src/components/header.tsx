@@ -1,18 +1,22 @@
 import { Button } from "./ui/button";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
-import { useSearchQuery } from "@/context/searchQueryContext";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import MapboxAutocomplete from "react-mapbox-autocomplete";
 import { useTheme } from "@/theme/theme-provider";
 import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { useSetSearchQuery } from "@/store/store";
 
 const Header = () => {
   const { theme } = useTheme();
-  const { setSearchQuery } = useSearchQuery();
-
   const { isSignedIn } = useUser();
+
+  const setSearchQuery = useSetSearchQuery();
+
+  if (!setSearchQuery) {
+    return null;
+  }
 
   const handleInputChange = (value: string) => {
     setSearchQuery(value);

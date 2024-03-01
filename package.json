@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^4.30.6",
     "@headlessui/react": "^1.7.18",
+    "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@mapbox/search-js-react": "^1.0.0-beta.18",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -37,7 +38,8 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",
-    "vaul": "^0.9.0"
+    "vaul": "^0.9.0",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^3.1.0",

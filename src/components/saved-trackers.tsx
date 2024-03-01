@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
-import { useFlyToLocationContext } from "@/context/flyToLocation";
-import { usePinLocationContext } from "@/context/pinLocationContext";
+import {
+  useSetFlyToLocation,
+  useSetPinLocation,
+} from "@/store/store";
 
 const DropdownMenuControls = memo(
   ({ TriggerIcon }: { TriggerIcon: JSX.Element }) => {
@@ -47,13 +49,13 @@ const DropdownMenuControls = memo(
 const SavedTrackers = () => {
   const [open, setIsOpen] = useState(false);
   const { savedTrackers } = useGetTrackers();
-  const { setFlyToLocation } = useFlyToLocationContext();
-  const { setPinLocation } = usePinLocationContext();
+  const setPinLocation = useSetPinLocation();
+  const setFlyToLocation = useSetFlyToLocation();
 
   const handleFlyToLocation = useCallback(
     ({ lat, lng }: { lat: number; lng: number }) => {
-      setFlyToLocation({ lat, lng });
-      setPinLocation({ lat, lng });
+      setFlyToLocation(lat, lng);
+      setPinLocation(lat, lng);
       setIsOpen(false);
     },
     [setFlyToLocation, setPinLocation]
