@@ -7,6 +7,7 @@ import Map, {
   Marker,
   MarkerDragEvent,
   NavigationControl,
+  Popup,
   ScaleControl,
 } from "react-map-gl";
 import { Button } from "./ui/button";
@@ -21,12 +22,13 @@ import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
 import { usePinLocationContext } from "@/context/pinLocationContext";
 import { useFlyToLocationContext } from "@/context/flyToLocation";
+import { Pin } from "lucide-react";
 
 export default function MapBox() {
   const mapRef = useRef<MapRef | null>(null);
   const { isSignedIn } = useUser();
   const { searchQuery } = useSearchQuery();
-  const { setPinLocation } = usePinLocationContext();
+  const { pinLocation, setPinLocation } = usePinLocationContext();
   const { toast } = useToast();
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [open, setOpen] = useState(false);
@@ -44,8 +46,8 @@ export default function MapBox() {
 
   useEffect(() => {
     if (locationResults.length === 2) {
-      const lat = +locationResults[0];
-      const lng = +locationResults[1];
+      const lat = +locationResults[1];
+      const lng = +locationResults[0];
       setFlyToLocation((prevState) => ({ ...prevState, lat, lng }));
     }
   }, [locationResults, setFlyToLocation]);
@@ -103,7 +105,7 @@ export default function MapBox() {
     mapRef.current?.flyTo({
       center: [flyToLocation.lng, flyToLocation.lat],
       zoom: 14,
-      duration: 1000,
+      duration: 4000,
     });
   }, [flyToLocation.lat, flyToLocation.lng]);
 
@@ -142,6 +144,16 @@ export default function MapBox() {
         setOpen={setOpen}
         onTrackerSaved={onTrackerSaved}
       />
+      {
+        <Popup
+          children={<Pin fill="red" />}
+          latitude={pinLocation.lat}
+          longitude={pinLocation.lng}
+          className="p-0 bg-transparent flex justify-center items-center"
+          closeButton={false}
+          closeOnClick={false}
+        ></Popup>
+      }
     </Map>
   );
 }

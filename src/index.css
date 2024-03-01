@@ -161,3 +161,7 @@ div .react-mapbox-ac-input-dark:focus {
 .pin {
   fill: #ee3616; /* Adjust as needed */
 }
+
+.mapboxgl-popup-conten {
+  padding: 0 !important;
+}

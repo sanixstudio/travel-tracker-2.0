@@ -19,6 +19,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
 import { useFlyToLocationContext } from "@/context/flyToLocation";
 import { useState } from "react";
+import { usePinLocationContext } from "@/context/pinLocationContext";
 
 interface DropdownMenuControlsProps {
   TriggerIcon: JSX.Element;
@@ -53,9 +54,11 @@ const SavedTrackers = () => {
   const [open, setIsOpen] = useState(false);
   const { savedTrackers } = useGetTrackers();
   const { setFlyToLocation } = useFlyToLocationContext();
+  const { setPinLocation } = usePinLocationContext();
 
   const handleFlyToLocation = ({ lat, lng }: { lat: number; lng: number }) => {
     setFlyToLocation({ lat, lng });
+    setPinLocation({ lat, lng });
     setIsOpen(false);
   };
 
