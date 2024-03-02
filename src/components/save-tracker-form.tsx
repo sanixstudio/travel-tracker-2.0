@@ -4,9 +4,9 @@ import { Button } from "./ui/button";
 import { useUser } from "@clerk/clerk-react";
 import { Tracker } from "@/typings";
 import saveTracker from "@/utils/saveTracker";
-import { usePinLocationContext } from "@/context/pinLocationContext";
 import { Star } from "lucide-react";
 import useScreenSize from "@/hooks/getScreenSize";
+import { usePinLocation } from "@/store/store";
 
 type FormDataWithoutLocation = Omit<Tracker, "latitude" | "longitude">;
 
@@ -19,7 +19,7 @@ const SaveTrackerForm = ({
 }) => {
   const { user } = useUser();
   const { breakpoint } = useScreenSize();
-  const { pinLocation } = usePinLocationContext();
+  const pinLocation = usePinLocation();
   const [formData, setFormData] = useState<FormDataWithoutLocation>({
     id: undefined,
     title: "",

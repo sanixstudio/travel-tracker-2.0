@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  CircleLayer,
   FullscreenControl,
   GeolocateControl,
+  Layer,
   Map,
   MapLayerMouseEvent,
   MapRef,
@@ -10,6 +12,7 @@ import {
   NavigationControl,
   Popup,
   ScaleControl,
+  Source,
 } from "react-map-gl";
 import { Button } from "./ui/button";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -124,6 +127,15 @@ const MapBox = () => {
     });
   }, [flyToLocation.lat, flyToLocation.lng]);
 
+  const layerStyle: CircleLayer = {
+    id: "point",
+    type: "circle",
+    paint: {
+      "circle-radius": 10,
+      "circle-color": "#EE3616",
+    },
+  };
+
   return (
     <Map
       ref={mapRef}
@@ -138,6 +150,25 @@ const MapBox = () => {
       style={{ width: "100%", height: "100vh" }}
       mapStyle={mapStyle}
     >
+      {savedTrackers.length > 0 && (
+        <Source
+          id="my-data"
+          type="geojson"
+          data={{
+            type: "FeatureCollection",
+            features: savedTrackers.map((tracker) => ({
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [tracker.longitude, tracker.latitude],
+              },
+              properties: {}, // Add additional properties if needed
+            })),
+          }}
+        >
+          <Layer {...layerStyle} />
+        </Source>
+      )}
       <NavigationControl position="bottom-right" />
       <GeolocateControl position="bottom-right" />
       <FullscreenControl position="bottom-right" />
