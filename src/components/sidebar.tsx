@@ -7,12 +7,19 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "./ui/sheet";
-
 import logo from "@/assets/site_logo.png";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Switch } from "./ui/switch";
+import { useSetShowPins, useShowPins } from "@/store/store";
 
 const Sidebar = () => {
+  const showPins = useShowPins();
+  const setShowPins = useSetShowPins();
+
+  const handleToggleShowPins = () => {
+    setShowPins(!showPins);
+  };
+
   return (
     <div className="flex-1 mt-24 size-10 absolute top-8 md:top-0 left-2 md:left-4 z-20 flex justify-center items-center">
       <Sheet>
@@ -38,7 +45,11 @@ const Sidebar = () => {
             </div>
             <div className="flex items-center space-x-2 justify-between py-4">
               <Label>Show Trackers</Label>
-              <Switch defaultChecked={true} id="airplane-mode" />
+              <Switch
+                id="pins-visibility"
+                checked={showPins}
+                onChange={handleToggleShowPins}
+              />
             </div>
           </SheetHeader>
           <div className="flex-1">Content</div>

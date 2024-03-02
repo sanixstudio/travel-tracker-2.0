@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 
 const FlyToLocationContext = createContext<{
-  flyToLocation: { lat: number; lng: number };
+  flyToLocation: { lng: number; lat: number };
   setFlyToLocation: React.Dispatch<
-    React.SetStateAction<{ lat: number; lng: number }>
+    React.SetStateAction<{ lng: number; lat: number }>
   >;
 }>({
-  flyToLocation: { lat: 0, lng: 0 },
+  flyToLocation: { lng: 0, lat: 0 },
   setFlyToLocation: () => {},
 });
 
@@ -16,11 +16,11 @@ export const FlyToLocationProvider = ({
   children: JSX.Element;
 }) => {
   const [flyToLocation, setFlyToLocation] = useState<{
-    lat: number;
     lng: number;
+    lat: number;
   }>({
-    lat: 0,
     lng: 0,
+    lat: 0,
   });
 
   return (

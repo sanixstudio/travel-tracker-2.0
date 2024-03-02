@@ -7,8 +7,8 @@ import {
 } from "react";
 
 interface PinInterface {
-  lat: number;
   lng: number;
+  lat: number;
 }
 
 interface PinLocationContextType {

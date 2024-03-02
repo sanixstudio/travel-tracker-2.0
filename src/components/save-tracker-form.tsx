@@ -81,8 +81,8 @@ const SaveTrackerForm = ({
     const formDataWithPinLocation: Tracker = {
       ...formData,
       id: uuidv4(),
-      latitude: pinLocation.lat,
       longitude: pinLocation.lng,
+      latitude: pinLocation.lat,
     };
     await saveTracker(user?.id as string, formDataWithPinLocation);
     setOpen(false);

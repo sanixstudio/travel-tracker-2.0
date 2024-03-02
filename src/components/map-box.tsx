@@ -10,7 +10,6 @@ import {
   Marker,
   MarkerDragEvent,
   NavigationControl,
-  Popup,
   ScaleControl,
   Source,
 } from "react-map-gl";
@@ -23,7 +22,6 @@ import StyleChangeButton from "./style-change-button";
 import useGetSuggestions from "@/hooks/getSuggestions";
 import useGetLocation from "@/hooks/getLocation";
 import { SignInButton, useUser } from "@clerk/clerk-react";
-import { MapPin } from "lucide-react";
 import useGetTrackers from "@/hooks/getTrackers";
 import {
   useFlyToLocation,
@@ -31,6 +29,7 @@ import {
   useSearchQuery,
   useSetFlyToLocation,
   useSetPinLocation,
+  useShowPins,
 } from "@/store/store";
 
 const MapBox = () => {
@@ -41,10 +40,8 @@ const MapBox = () => {
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
-  // TODOUse Better State management for this
-  const [showSavedPins] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setCurrentLocation] = useState({ lat: 0, lng: 0 });
+  const showSavedPins = useShowPins();
+  const [, setCurrentLocation] = useState({ lng: 0, lat: 0 });
 
   const searchQuery = useSearchQuery();
   const pinLocation = usePinLocation();
@@ -60,7 +57,7 @@ const MapBox = () => {
   useEffect(() => {
     if (locationResults.length === 2) {
       const [lng, lat] = locationResults.map(Number);
-      setFlyToLocation(lat, lng);
+      setFlyToLocation(lng, lat);
     }
   }, [locationResults, setFlyToLocation]);
 
@@ -74,10 +71,10 @@ const MapBox = () => {
   }, [suggestionsError, locationError]);
 
   const handleClick = (e: MapLayerMouseEvent) => {
-    const { lat, lng } = e.lngLat;
+    const { lng, lat } = e.lngLat;
     setMarkerVisible((prevState) => !prevState);
-    setCurrentLocation({ lat, lng });
-    setPinLocation(lat, lng);
+    setCurrentLocation({ lng, lat });
+    setPinLocation(lng, lat);
 
     if (!markerVisible) {
       toast({
@@ -107,16 +104,16 @@ const MapBox = () => {
   };
 
   const onMarkerDrag = (e: MarkerDragEvent) => {
-    const { lat, lng } = e.lngLat;
-    setPinLocation(lat, lng);
+    const { lng, lat } = e.lngLat;
+    setPinLocation(lng, lat);
   };
 
   const onTrackerSaved = () => {
     setMarkerVisible(false);
     setDrawerOpen(false);
-    const lat = 0;
     const lng = 0;
-    setPinLocation(lat, lng);
+    const lat = 0;
+    setPinLocation(lng, lat);
   };
 
   useEffect(() => {
@@ -125,7 +122,7 @@ const MapBox = () => {
       zoom: 14,
       duration: 4000,
     });
-  }, [flyToLocation.lat, flyToLocation.lng]);
+  }, [flyToLocation.lng, flyToLocation.lat]);
 
   const layerStyle: CircleLayer = {
     id: "point",
@@ -133,6 +130,9 @@ const MapBox = () => {
     paint: {
       "circle-radius": 10,
       "circle-color": "#EE3616",
+    },
+    layout: {
+      visibility: showSavedPins ? "visible" : "none",
     },
   };
 
@@ -160,7 +160,7 @@ const MapBox = () => {
               type: "Feature",
               geometry: {
                 type: "Point",
-                coordinates: [tracker.longitude, tracker.latitude],
+                coordinates: [tracker.latitude, tracker.longitude],
               },
               properties: {}, // Add additional properties if needed
             })),
@@ -180,8 +180,8 @@ const MapBox = () => {
           scale={0.8}
           draggable={true}
           onDrag={onMarkerDrag}
-          latitude={pinLocation.lat}
           longitude={pinLocation.lng}
+          latitude={pinLocation.lat}
           clickTolerance={3}
         />
       )}
@@ -190,7 +190,7 @@ const MapBox = () => {
         setOpen={setDrawerOpen}
         onTrackerSaved={onTrackerSaved}
       />
-      {showSavedPins &&
+      {/* {showSavedPins &&
         savedTrackers.length > 0 &&
         savedTrackers.map((tracker, i) => (
           <Popup
@@ -202,7 +202,7 @@ const MapBox = () => {
             closeButton={false}
             closeOnClick={false}
           ></Popup>
-        ))}
+        ))} */}
     </Map>
   );
 };

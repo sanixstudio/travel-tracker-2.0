@@ -16,10 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
-import {
-  useSetFlyToLocation,
-  useSetPinLocation,
-} from "@/store/store";
+import { useSetFlyToLocation, useSetPinLocation } from "@/store/store";
 
 const DropdownMenuControls = memo(
   ({ TriggerIcon }: { TriggerIcon: JSX.Element }) => {
@@ -53,9 +50,9 @@ const SavedTrackers = () => {
   const setFlyToLocation = useSetFlyToLocation();
 
   const handleFlyToLocation = useCallback(
-    ({ lat, lng }: { lat: number; lng: number }) => {
-      setFlyToLocation(lat, lng);
-      setPinLocation(lat, lng);
+    ({ lng, lat }: { lng: number; lat: number }) => {
+      setFlyToLocation(lng, lat);
+      setPinLocation(lng, lat);
       setIsOpen(false);
     },
     [setFlyToLocation, setPinLocation]
@@ -87,8 +84,8 @@ const SavedTrackers = () => {
                 <div
                   onClick={() =>
                     handleFlyToLocation({
-                      lat: tracker.latitude,
                       lng: tracker.longitude,
+                      lat: tracker.latitude,
                     })
                   }
                   key={tracker.id || `tracker-${index}`} // Prefer a unique ID, fallback to index
