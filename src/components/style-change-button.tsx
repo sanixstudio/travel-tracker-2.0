@@ -13,7 +13,7 @@ const StyleChangeButton = ({
 
   return (
     <div
-      className="size-[40px] rounded-[10px] absolute hover:w-[180px] bottom-[90px] md:bottom-[30px] left-[100px] flex items-center cursor-pointer"
+      className="size-[40px] rounded-[10px] absolute hover:w-[180px] bottom-[50px] md:bottom-[30px] left-[100px] flex items-center cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

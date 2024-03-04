@@ -186,11 +186,14 @@ const MapBox = () => {
           <Layer {...layerStyle} />
         </Source>
       )}
-        <NavigationControl position="bottom-right" style={{marginBottom: '6em'}} />
-        <GeolocateControl position="bottom-right" />
-        <FullscreenControl position="bottom-right" />
-        <StyleChangeButton setMapStyle={setMapStyle} />
-        <ScaleControl style={{ zIndex: 0, marginBottom: '6em' }} />
+      <NavigationControl
+        position="bottom-right"
+        style={{ marginBottom: "2em" }}
+      />
+      <GeolocateControl position="bottom-right" />
+      <FullscreenControl position="bottom-right" />
+      <StyleChangeButton setMapStyle={setMapStyle} />
+      <ScaleControl style={{ zIndex: 0, marginBottom: "2em" }} />
       {markerVisible && (
         <Marker
           color="red"
