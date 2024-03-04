@@ -175,3 +175,13 @@ div [class$="--SearchBox"] {
   box-shadow: none !important;
   border: solid 1px gray;
 }
+
+.mapboxgl-popup-tip {
+  background: transparent;
+  border-top-color: #ee3616 !important;
+  display: none;
+}
+
+.mapboxgl-popup-content {
+  background: transparent !important;
+}

@@ -33,7 +33,7 @@ import {
   useSetPinLocation,
   useShowPins,
 } from "@/store/store";
-import { MapPin } from "lucide-react";
+import { Pin } from "lucide-react";
 
 const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
@@ -220,7 +220,7 @@ const MapBox = () => {
         ))} */}
       {pointerLocation.lng !== 0 && pointerLocation.lat !== 0 && (
         <Popup
-          children={<MapPin fill="red" />}
+          children={<Pin fill="#ee3616" color="#ee3616" />}
           longitude={pointerLocation.lng}
           latitude={pointerLocation.lat}
           className="p-0 bg-transparent flex justify-center items-center"

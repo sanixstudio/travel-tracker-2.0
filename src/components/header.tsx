@@ -7,7 +7,7 @@ import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import {
   useSearchQuery,
   useSetFlyToLocation,
-  useSetPinLocation,
+  useSetPointerLocation,
   useSetSearchQuery,
 } from "@/store/store";
 
@@ -17,9 +17,8 @@ const Header = () => {
   const searchQuery = useSearchQuery();
   const setFlyToLocation = useSetFlyToLocation();
 
-  const setPinLocation = useSetPinLocation();
+  const setPointerLocation = useSetPointerLocation();
 
-  // Memoize the search box component to prevent unnecessary re-renders
   const searchBoxComponent = useMemo(
     () => (
       <>
@@ -30,7 +29,7 @@ const Header = () => {
           placeholder={"Search Address..."}
           accessToken={import.meta.env.VITE_EXTRA_KEY}
           onRetrieve={(e) => {
-            setPinLocation(
+            setPointerLocation(
               e.features[0].geometry.coordinates[0],
               e.features[0].geometry.coordinates[1]
             );
@@ -42,7 +41,7 @@ const Header = () => {
         />
       </>
     ),
-    [searchQuery, setFlyToLocation, setPinLocation]
+    [searchQuery, setFlyToLocation, setPointerLocation]
   );
 
   if (!setSearchQuery) {
