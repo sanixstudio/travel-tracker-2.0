@@ -27,6 +27,7 @@ import useGetTrackers from "@/hooks/getTrackers";
 import {
   useFlyToLocation,
   usePinLocation,
+  usePointerLocation,
   useSearchQuery,
   useSetFlyToLocation,
   useSetPinLocation,
@@ -50,10 +51,11 @@ const MapBox = () => {
   const setPinLocation = useSetPinLocation();
   const flyToLocation = useFlyToLocation();
   const setFlyToLocation = useSetFlyToLocation();
+  const pointerLocation = usePointerLocation();
 
   useEffect(() => {
-    console.log(pinLocation);
-  }, [pinLocation]);
+    console.log(pointerLocation);
+  }, [pointerLocation]);
 
   const { searchResults, error: suggestionsError } =
     useGetSuggestions(searchQuery);
@@ -82,11 +84,14 @@ const MapBox = () => {
     setCurrentLocation({ lng, lat });
     setPinLocation(lng, lat);
 
-    if (!markerVisible) {
+    if (!drawerOpen) {
+      // Only show toast if drawer is not open
       toast({
         duration: 2500,
         title: "Save pin?",
-        className: "dark:bg-slate-800 dark:text-white",
+        className: `dark:bg-slate-800 dark:text-white ${
+          markerVisible && !drawerOpen ? "visible" : "invisible"
+        }`,
         action: (
           <div className="flex gap-2">
             {isSignedIn ? (
@@ -141,6 +146,9 @@ const MapBox = () => {
     layout: {
       visibility: showSavedPins ? "visible" : "none",
     },
+    metadata: {
+      description: "Saved pins",
+    },
   };
 
   return (
@@ -148,9 +156,9 @@ const MapBox = () => {
       ref={mapRef}
       mapboxAccessToken={import.meta.env.VITE_MAP_BOX_TOKEN}
       initialViewState={{
-        longitude: -122.433893,
-        latitude: 37.780281,
-        zoom: 18,
+        longitude: -122.433892,
+        latitude: 37.780261,
+        zoom: 16,
       }}
       onClick={handleClick}
       antialias={true}
@@ -210,14 +218,16 @@ const MapBox = () => {
             closeOnClick={false}
           ></Popup>
         ))} */}
-      <Popup
-        children={<MapPin fill="red" />}
-        longitude={pinLocation.lng}
-        latitude={pinLocation.lat}
-        className="p-0 bg-transparent flex justify-center items-center"
-        closeButton={false}
-        closeOnClick={false}
-      ></Popup>
+      {pointerLocation.lng !== 0 && pointerLocation.lat !== 0 && (
+        <Popup
+          children={<MapPin fill="red" />}
+          longitude={pointerLocation.lng}
+          latitude={pointerLocation.lat}
+          className="p-0 bg-transparent flex justify-center items-center"
+          closeButton={false}
+          closeOnClick={false}
+        ></Popup>
+      )}
     </Map>
   );
 };

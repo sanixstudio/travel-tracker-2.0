@@ -3,13 +3,15 @@ import { create } from "zustand";
 // Define the shape of your combined store
 export interface StoreState {
   flyToLocation: { lng: number; lat: number };
-  pinLocation: { lat: number; lng: number };
+  pinLocation: { lng: number; lat: number };
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   setFlyToLocation: (lng: number, lat: number) => void;
   setPinLocation: (lng: number, lat: number) => void;
   showPins: boolean;
   setShowPins: (show: boolean) => void;
+  pointerLocation: { lng: number; lat: number };
+  setPointerLocation: (lng: number, lat: number) => void;
 }
 
 // Create the Zustand store
@@ -17,6 +19,7 @@ export const useStore = create<StoreState>((set) => ({
   flyToLocation: { lng: 37, lat: 122 },
   pinLocation: { lng: 0, lat: 0 },
   searchQuery: "",
+  pointerLocation: { lng: 0, lat: 0 },
 
   setFlyToLocation: (lng: number, lat: number) =>
     set({ flyToLocation: { lng, lat } }),
@@ -28,6 +31,9 @@ export const useStore = create<StoreState>((set) => ({
 
   showPins: true, // or false if you want pins to be hidden by default
   setShowPins: (show: boolean) => set({ showPins: show }),
+
+  setPointerLocation: (lng: number, lat: number) =>
+    set({ pointerLocation: { lng, lat } }),
 }));
 
 // Export custom hooks to access the store values
@@ -45,3 +51,8 @@ export const useSetSearchQuery = () =>
 
 export const useShowPins = () => useStore((state) => state.showPins);
 export const useSetShowPins = () => useStore((state) => state.setShowPins);
+
+export const usePointerLocation = () =>
+  useStore((state) => state.pointerLocation);
+export const useSetPointerLocation = () =>
+  useStore((state) => state.setPointerLocation);

@@ -6,6 +6,7 @@
 - [x] Create dashboard UI
 - [x] Add logic to handle save to firebase
 - [x] Add logic to get trackers/pins from firebase
+- [ ] Add pin hover card (Show pin location information)
 - [ ] Add logic for user, trackers/pins, CRUD
 
 ## Features

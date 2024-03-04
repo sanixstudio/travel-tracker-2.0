@@ -18,6 +18,7 @@ const SaveTrackerForm = ({
   onTrackerSaved: () => void;
 }) => {
   const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
   const { breakpoint } = useScreenSize();
   const pinLocation = usePinLocation();
   const [formData, setFormData] = useState<FormDataWithoutLocation>({
@@ -78,17 +79,22 @@ const SaveTrackerForm = ({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
+
     const formDataWithPinLocation: Tracker = {
       ...formData,
       id: uuidv4(),
       longitude: pinLocation.lng,
       latitude: pinLocation.lat,
     };
+
     await saveTracker(user?.id as string, formDataWithPinLocation);
     setOpen(false);
 
     // Callback function to update the list of trackers
     onTrackerSaved();
+
+    setIsLoading(false);
 
     // Reset form fields
     setFormData({
@@ -200,9 +206,23 @@ const SaveTrackerForm = ({
             ))}
           </fieldset>
         </div>
-        <Button size={breakpoint === "xs" ? "sm" : "lg"} type="submit">
-          Submit
-        </Button>
+        <div>
+          <Button
+            disabled={isLoading}
+            size={breakpoint === "xs" ? "sm" : "lg"}
+            type="submit"
+          >
+            Submit
+          </Button>
+          <Button
+            variant={"destructive"}
+            size={breakpoint === "xs" ? "sm" : "lg"}
+            onClick={() => setOpen(false)}
+            className="ml-4 disabled:bg-red-600"
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   );

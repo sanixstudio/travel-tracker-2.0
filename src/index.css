@@ -165,3 +165,13 @@ div .react-mapbox-ac-input-dark:focus {
 .mapboxgl-popup-content {
   padding: 0 !important;
 }
+
+.mbx059ea06a--SearchBox {
+  box-shadow: none !important;
+  background: #000;
+}
+
+div [class$="--SearchBox"] {
+  box-shadow: none !important;
+  border: solid 1px gray;
+}
