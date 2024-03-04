@@ -1,26 +1,53 @@
+import { useMemo } from "react";
 import { Button } from "./ui/button";
 import logo from "@/assets/site_logo.png";
 import { ModeToggle } from "./mode-toggle";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import MapboxAutocomplete from "react-mapbox-autocomplete";
-import { useTheme } from "@/theme/theme-provider";
+import { SearchBox } from "@mapbox/search-js-react";
 import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
-import { useSetSearchQuery } from "@/store/store";
+import {
+  useSearchQuery,
+  useSetFlyToLocation,
+  useSetPinLocation,
+  useSetSearchQuery,
+} from "@/store/store";
 
 const Header = () => {
-  const { theme } = useTheme();
   const { isSignedIn } = useUser();
-
   const setSearchQuery = useSetSearchQuery();
+  const searchQuery = useSearchQuery();
+  const setFlyToLocation = useSetFlyToLocation();
+
+  const setPinLocation = useSetPinLocation();
+
+  // Memoize the search box component to prevent unnecessary re-renders
+  const searchBoxComponent = useMemo(
+    () => (
+      <>
+        {/* @ts-expect-error Server Component */}
+        <SearchBox
+          marker={true}
+          value={searchQuery}
+          placeholder={"Search Address..."}
+          accessToken={import.meta.env.VITE_EXTRA_KEY}
+          onRetrieve={(e) => {
+            setPinLocation(
+              e.features[0].geometry.coordinates[0],
+              e.features[0].geometry.coordinates[1]
+            );
+            setFlyToLocation(
+              e.features[0].geometry.coordinates[0],
+              e.features[0].geometry.coordinates[1]
+            );
+          }}
+        />
+      </>
+    ),
+    [searchQuery, setFlyToLocation, setPinLocation]
+  );
 
   if (!setSearchQuery) {
     return null;
   }
-
-  const handleInputChange = (value: string) => {
-    setSearchQuery(value);
-  };
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg fixed w-full z-10 h-[73px]">
@@ -43,15 +70,7 @@ const Header = () => {
               onSubmit={(e) => e.preventDefault()}
               className="w-full relative"
             >
-              <MapboxAutocomplete
-                publicKey={import.meta.env.VITE_EXTRA_KEY}
-                inputClass={`form-control search  ${
-                  theme === "dark" ? "react-mapbox-ac-input-dark is-dark" : ""
-                }`}
-                onSuggestionSelect={handleInputChange}
-                resetSearch={false}
-                placeholder="Search Address..."
-              ></MapboxAutocomplete>
+              {searchBoxComponent}
             </form>
           </div>
         </div>

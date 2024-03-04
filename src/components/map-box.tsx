@@ -10,6 +10,7 @@ import {
   Marker,
   MarkerDragEvent,
   NavigationControl,
+  Popup,
   ScaleControl,
   Source,
 } from "react-map-gl";
@@ -31,6 +32,7 @@ import {
   useSetPinLocation,
   useShowPins,
 } from "@/store/store";
+import { MapPin } from "lucide-react";
 
 const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
@@ -48,6 +50,10 @@ const MapBox = () => {
   const setPinLocation = useSetPinLocation();
   const flyToLocation = useFlyToLocation();
   const setFlyToLocation = useSetFlyToLocation();
+
+  useEffect(() => {
+    console.log(pinLocation);
+  }, [pinLocation]);
 
   const { searchResults, error: suggestionsError } =
     useGetSuggestions(searchQuery);
@@ -119,8 +125,9 @@ const MapBox = () => {
   useEffect(() => {
     mapRef.current?.flyTo({
       center: [flyToLocation.lng, flyToLocation.lat],
-      zoom: 14,
+      zoom: 18,
       duration: 4000,
+      offset: [0, 0],
     });
   }, [flyToLocation.lng, flyToLocation.lat]);
 
@@ -141,9 +148,9 @@ const MapBox = () => {
       ref={mapRef}
       mapboxAccessToken={import.meta.env.VITE_MAP_BOX_TOKEN}
       initialViewState={{
-        longitude: -122.4,
-        latitude: 37.8,
-        zoom: 14,
+        longitude: -122.433893,
+        latitude: 37.780281,
+        zoom: 18,
       }}
       onClick={handleClick}
       antialias={true}
@@ -160,7 +167,7 @@ const MapBox = () => {
               type: "Feature",
               geometry: {
                 type: "Point",
-                coordinates: [tracker.latitude, tracker.longitude],
+                coordinates: [tracker.longitude, tracker.latitude],
               },
               properties: {}, // Add additional properties if needed
             })),
@@ -203,6 +210,14 @@ const MapBox = () => {
             closeOnClick={false}
           ></Popup>
         ))} */}
+      <Popup
+        children={<MapPin fill="red" />}
+        longitude={pinLocation.lng}
+        latitude={pinLocation.lat}
+        className="p-0 bg-transparent flex justify-center items-center"
+        closeButton={false}
+        closeOnClick={false}
+      ></Popup>
     </Map>
   );
 };

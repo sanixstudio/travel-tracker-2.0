@@ -5,6 +5,6 @@ export type Tracker = {
   description: string;
   rating: number;
   image: string;
-  latitude: number;
   longitude: number;
+  latitude: number;
 };
