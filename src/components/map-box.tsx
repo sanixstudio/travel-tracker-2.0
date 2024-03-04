@@ -34,6 +34,8 @@ import {
   useShowPins,
 } from "@/store/store";
 import { Pin } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider } from "./ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 const MapBox = () => {
   const mapRef = useRef<MapRef | null>(null);
@@ -184,11 +186,11 @@ const MapBox = () => {
           <Layer {...layerStyle} />
         </Source>
       )}
-      <NavigationControl position="bottom-right" />
-      <GeolocateControl position="bottom-right" />
-      <FullscreenControl position="bottom-right" />
-      <StyleChangeButton setMapStyle={setMapStyle} />
-      <ScaleControl style={{ zIndex: 0 }} />
+        <NavigationControl position="bottom-right" style={{marginBottom: '6em'}} />
+        <GeolocateControl position="bottom-right" />
+        <FullscreenControl position="bottom-right" />
+        <StyleChangeButton setMapStyle={setMapStyle} />
+        <ScaleControl style={{ zIndex: 0, marginBottom: '6em' }} />
       {markerVisible && (
         <Marker
           color="red"
@@ -205,29 +207,31 @@ const MapBox = () => {
         setOpen={setDrawerOpen}
         onTrackerSaved={onTrackerSaved}
       />
-      {/* {showSavedPins &&
-        savedTrackers.length > 0 &&
-        savedTrackers.map((tracker, i) => (
+      {pointerLocation.coordinates.lng !== 0 &&
+        pointerLocation.coordinates.lat !== 0 && (
           <Popup
-            key={i}
-            children={<MapPin fill="red" />}
-            latitude={tracker.latitude}
-            longitude={tracker.longitude}
-            className="p-0 bg-transparent flex justify-center items-center"
+            longitude={pointerLocation.coordinates.lng}
+            latitude={pointerLocation.coordinates.lat}
             closeButton={false}
             closeOnClick={false}
-          ></Popup>
-        ))} */}
-      {pointerLocation.lng !== 0 && pointerLocation.lat !== 0 && (
-        <Popup
-          children={<Pin fill="#ee3616" color="#ee3616" />}
-          longitude={pointerLocation.lng}
-          latitude={pointerLocation.lat}
-          className="p-0 bg-transparent flex justify-center items-center"
-          closeButton={false}
-          closeOnClick={false}
-        ></Popup>
-      )}
+            anchor="top"
+          >
+            <>
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger className="hover:bg-primary/30 transition-all duration-300 py-1">
+                    <Pin fill="#ee3616" color="#ee3616" />
+                  </TooltipTrigger>
+                  <TooltipContent className={``}>
+                    <div className="text-white text-xs bg-black p-2 mt-1">
+                      {pointerLocation.fullAddress}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          </Popup>
+        )}
     </Map>
   );
 };

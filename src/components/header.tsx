@@ -29,10 +29,11 @@ const Header = () => {
           placeholder={"Search Address..."}
           accessToken={import.meta.env.VITE_EXTRA_KEY}
           onRetrieve={(e) => {
-            setPointerLocation(
-              e.features[0].geometry.coordinates[0],
-              e.features[0].geometry.coordinates[1]
-            );
+            const { longitude, latitude } =
+              e.features[0].properties.coordinates;
+            const fullAddress = e.features[0].properties.full_address;
+
+            setPointerLocation(longitude, latitude, fullAddress);
             setFlyToLocation(
               e.features[0].geometry.coordinates[0],
               e.features[0].geometry.coordinates[1]

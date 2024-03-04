@@ -5,13 +5,18 @@ export interface StoreState {
   flyToLocation: { lng: number; lat: number };
   pinLocation: { lng: number; lat: number };
   searchQuery: string;
+  showPins: boolean;
+  pointerLocation: {
+    coordinates: { lng: number; lat: number };
+    fullAddress: string;
+  };
+
   setSearchQuery: (query: string) => void;
   setFlyToLocation: (lng: number, lat: number) => void;
   setPinLocation: (lng: number, lat: number) => void;
-  showPins: boolean;
   setShowPins: (show: boolean) => void;
-  pointerLocation: { lng: number; lat: number };
-  setPointerLocation: (lng: number, lat: number) => void;
+  // Adjust the type signature to include fullAddress
+  setPointerLocation: (lng: number, lat: number, fullAddress: string) => void;
 }
 
 // Create the Zustand store
@@ -19,7 +24,11 @@ export const useStore = create<StoreState>((set) => ({
   flyToLocation: { lng: 37, lat: 122 },
   pinLocation: { lng: 0, lat: 0 },
   searchQuery: "",
-  pointerLocation: { lng: 0, lat: 0 },
+  showPins: true, // or false if you want pins to be hidden by default
+  pointerLocation: {
+    coordinates: { lng: 0, lat: 0 },
+    fullAddress: "",
+  },
 
   setFlyToLocation: (lng: number, lat: number) =>
     set({ flyToLocation: { lng, lat } }),
@@ -29,11 +38,16 @@ export const useStore = create<StoreState>((set) => ({
 
   setSearchQuery: (query: string) => set({ searchQuery: query }),
 
-  showPins: true, // or false if you want pins to be hidden by default
   setShowPins: (show: boolean) => set({ showPins: show }),
 
-  setPointerLocation: (lng: number, lat: number) =>
-    set({ pointerLocation: { lng, lat } }),
+  // Adjust the function to also update the fullAddress
+  setPointerLocation: (lng: number, lat: number, fullAddress: string) =>
+    set({
+      pointerLocation: {
+        coordinates: { lng, lat },
+        fullAddress, // Update the fullAddress here
+      },
+    }),
 }));
 
 // Export custom hooks to access the store values
