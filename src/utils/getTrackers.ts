@@ -1,15 +1,23 @@
 import { toast } from "@/components/ui/use-toast";
 import { db } from "@/lib/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, query, orderByChild, equalTo, onValue } from "firebase/database";
 
 const getTrackers = async (userId: string | undefined) => {
   if (!userId) {
     console.log("no userId");
+    return []; // Return an empty array if no user ID is provided
   }
 
   return new Promise((resolve, reject) => {
     try {
-      const trackersRef = ref(db, `trackers`);
+      // Create a query to filter data by userId
+      const trackersRef = query(
+        ref(db, "trackers"),
+        orderByChild("userId"),
+        equalTo(userId)
+      );
+
+      // Listen for changes to the data
       onValue(trackersRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {

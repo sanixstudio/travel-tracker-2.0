@@ -17,6 +17,8 @@ import {
 import { ScrollArea } from "./ui/scroll-area";
 import useGetTrackers from "@/hooks/getTrackers";
 import { useSetFlyToLocation, useSetPinLocation } from "@/store/store";
+import { Button } from "./ui/button";
+import { SignInButton } from "@clerk/clerk-react";
 
 const DropdownMenuControls = memo(
   ({ TriggerIcon }: { TriggerIcon: JSX.Element }) => {
@@ -78,32 +80,46 @@ const SavedTrackers = () => {
               </p>
             </div>
           </SheetHeader>
-          <ScrollArea className="scrollable-area overflow-y-auto">
-            <div className="flex flex-col">
-              {savedTrackers.map((tracker, index) => (
-                <div
-                  onClick={() =>
-                    handleFlyToLocation({
-                      lng: tracker.longitude,
-                      lat: tracker.latitude,
-                    })
-                  }
-                  key={tracker.id || `tracker-${index}`} // Prefer a unique ID, fallback to index
-                  className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
-                >
-                  <img
-                    src={tracker.image}
-                    alt="pin-image"
-                    className="size-10 md:size-12 rounded-xl object-contain"
-                  />
-                  <span className="flex-1 text-sm md:text-base">
-                    {tracker.title}
-                  </span>
-                  <DropdownMenuControls TriggerIcon={<MoreVertical />} />
-                </div>
-              ))}
+          {savedTrackers.length > 0 ? (
+            <ScrollArea className="scrollable-area overflow-y-auto h-screen">
+              <div className="flex flex-col">
+                {savedTrackers.map((tracker, index) => (
+                  <div
+                    onClick={() =>
+                      handleFlyToLocation({
+                        lng: tracker.longitude,
+                        lat: tracker.latitude,
+                      })
+                    }
+                    key={tracker.id || `tracker-${index}`} // Prefer a unique ID, fallback to index
+                    className="w-full flex justify-between items-center gap-2 py-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-2"
+                  >
+                    <img
+                      src={tracker.image}
+                      alt="pin-image"
+                      className="size-10 md:size-12 rounded-xl object-contain"
+                    />
+                    <span className="flex-1 text-sm md:text-base">
+                      {tracker.title}
+                    </span>
+                    <DropdownMenuControls TriggerIcon={<MoreVertical />} />
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          ) : (
+            <div className="flex flex-col gap-4 justify-center items-center h-full">
+              <span className="text-slate-700 dark:text-slate-400 text-xl font-semibold border-b pb-2">
+                No saved trackers
+              </span>
+              <span className="text-slate-700 dark:text-slate-400">
+                Login to save trackers
+              </span>
+              <SignInButton mode="modal">
+                <Button>Sign In</Button>
+              </SignInButton>
             </div>
-          </ScrollArea>
+          )}
           <SheetFooter className="border-t pt-6 block text-center text-gray-400 dark:text-slate-500 max-h-20">
             &copy;SanixStudio (2024)
           </SheetFooter>

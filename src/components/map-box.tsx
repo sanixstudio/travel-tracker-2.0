@@ -1,18 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  CircleLayer,
   FullscreenControl,
   GeolocateControl,
-  Layer,
   Map,
   MapLayerMouseEvent,
   MapRef,
-  Marker,
-  MarkerDragEvent,
   NavigationControl,
   Popup,
   ScaleControl,
-  Source,
 } from "react-map-gl";
 import { Button } from "./ui/button";
 import { ToastAction } from "@radix-ui/react-toast";
@@ -26,18 +21,17 @@ import { SignInButton, useUser } from "@clerk/clerk-react";
 import useGetTrackers from "@/hooks/getTrackers";
 import {
   useFlyToLocation,
-  usePinLocation,
   usePointerLocation,
   useSearchQuery,
   useSetFlyToLocation,
-  useSetPinLocation,
-  useShowPins,
+  useSetPointerLocation,
 } from "@/store/store";
-import { Pin } from "lucide-react";
+import { Circle, MapPin } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider } from "./ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 const MapBox = () => {
+  const [, setToolTipVisible] = useState({});
   const mapRef = useRef<MapRef | null>(null);
   const { savedTrackers } = useGetTrackers();
   const { isSignedIn } = useUser();
@@ -45,19 +39,13 @@ const MapBox = () => {
   const [mapStyle, setMapStyle] = useState<string>(streetMapStyleV12);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [markerVisible, setMarkerVisible] = useState(false);
-  const showSavedPins = useShowPins();
   const [, setCurrentLocation] = useState({ lng: 0, lat: 0 });
 
   const searchQuery = useSearchQuery();
-  const pinLocation = usePinLocation();
-  const setPinLocation = useSetPinLocation();
   const flyToLocation = useFlyToLocation();
   const setFlyToLocation = useSetFlyToLocation();
   const pointerLocation = usePointerLocation();
-
-  useEffect(() => {
-    console.log(pointerLocation);
-  }, [pointerLocation]);
+  const setPointerLocation = useSetPointerLocation();
 
   const { searchResults, error: suggestionsError } =
     useGetSuggestions(searchQuery);
@@ -84,15 +72,14 @@ const MapBox = () => {
     const { lng, lat } = e.lngLat;
     setMarkerVisible((prevState) => !prevState);
     setCurrentLocation({ lng, lat });
-    setPinLocation(lng, lat);
-
+    setPointerLocation(lng, lat, "Location"); // Updated to pass the new coordinates and fullAddress
     if (!drawerOpen) {
       // Only show toast if drawer is not open
       toast({
         duration: 2500,
         title: "Save pin?",
         className: `dark:bg-slate-800 dark:text-white ${
-          markerVisible && !drawerOpen ? "visible" : "invisible"
+          !markerVisible && !drawerOpen ? "visible" : "invisible"
         }`,
         action: (
           <div className="flex gap-2">
@@ -116,17 +103,14 @@ const MapBox = () => {
     }
   };
 
-  const onMarkerDrag = (e: MarkerDragEvent) => {
-    const { lng, lat } = e.lngLat;
-    setPinLocation(lng, lat);
-  };
-
   const onTrackerSaved = () => {
     setMarkerVisible(false);
     setDrawerOpen(false);
-    const lng = 0;
-    const lat = 0;
-    setPinLocation(lng, lat);
+    setPointerLocation(
+      pointerLocation.coordinates.lng,
+      pointerLocation.coordinates.lat,
+      "Pointer"
+    );
   };
 
   useEffect(() => {
@@ -138,20 +122,20 @@ const MapBox = () => {
     });
   }, [flyToLocation.lng, flyToLocation.lat]);
 
-  const layerStyle: CircleLayer = {
-    id: "point",
-    type: "circle",
-    paint: {
-      "circle-radius": 10,
-      "circle-color": "#EE3616",
-    },
-    layout: {
-      visibility: showSavedPins ? "visible" : "none",
-    },
-    metadata: {
-      description: "Saved pins",
-    },
-  };
+  // const layerStyle: CircleLayer = {
+  //   id: "point",
+  //   type: "circle",
+  //   paint: {
+  //     "circle-radius": 10,
+  //     "circle-color": "#EE3616",
+  //   },
+  //   layout: {
+  //     visibility: showSavedPins ? "visible" : "none",
+  //   },
+  //   metadata: {
+  //     description: "Saved pins",
+  //   },
+  // };
 
   return (
     <Map
@@ -167,25 +151,6 @@ const MapBox = () => {
       style={{ width: "100%", height: "100vh" }}
       mapStyle={mapStyle}
     >
-      {savedTrackers.length > 0 && (
-        <Source
-          id="my-data"
-          type="geojson"
-          data={{
-            type: "FeatureCollection",
-            features: savedTrackers.map((tracker) => ({
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [tracker.longitude, tracker.latitude],
-              },
-              properties: {}, // Add additional properties if needed
-            })),
-          }}
-        >
-          <Layer {...layerStyle} />
-        </Source>
-      )}
       <NavigationControl
         position="bottom-right"
         style={{ marginBottom: "2em" }}
@@ -194,47 +159,94 @@ const MapBox = () => {
       <FullscreenControl position="bottom-right" />
       <StyleChangeButton setMapStyle={setMapStyle} />
       <ScaleControl style={{ zIndex: 0, marginBottom: "2em" }} />
-      {markerVisible && (
+      {/* {markerVisible && (
         <Marker
           color="red"
           scale={0.8}
           draggable={true}
-          onDrag={onMarkerDrag}
-          longitude={pinLocation.lng}
-          latitude={pinLocation.lat}
+          longitude={pointerLocation.coordinates.lng}
+          latitude={pointerLocation.coordinates.lat}
           clickTolerance={3}
         />
-      )}
+      )} */}
       <SaveTrackerDrawer
         open={drawerOpen}
         setOpen={setDrawerOpen}
         onTrackerSaved={onTrackerSaved}
       />
-      {pointerLocation.coordinates.lng !== 0 &&
-        pointerLocation.coordinates.lat !== 0 && (
+      {markerVisible && (
+        <Popup
+          longitude={pointerLocation.coordinates.lng}
+          latitude={pointerLocation.coordinates.lat}
+          anchor="top"
+        >
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                onMouseEnter={() =>
+                  setToolTipVisible((prevState) => ({
+                    ...prevState,
+                    Pointer: true,
+                  }))
+                }
+                onMouseLeave={() =>
+                  setToolTipVisible((prevState) => ({
+                    ...prevState,
+                    Pointer: false,
+                  }))
+                }
+                className="hover:bg-primary/30 transition-all duration-300 py-1"
+              >
+                <MapPin fill="#ee3616" color="#ee3616" />
+              </TooltipTrigger>
+              <TooltipContent className={`max-w-[200px]`}>
+                <div className="text-white text-xs bg-black p-2 mt-1 flex flex-wrap">
+                  <span className="text-wrap">
+                    {pointerLocation.fullAddress}
+                  </span>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </Popup>
+      )}
+      {savedTrackers.length > 0 &&
+        savedTrackers.map((tracker, i) => (
           <Popup
-            longitude={pointerLocation.coordinates.lng}
-            latitude={pointerLocation.coordinates.lat}
+            key={tracker.id}
+            longitude={tracker.longitude}
+            latitude={tracker.latitude}
             closeButton={false}
-            closeOnClick={false}
             anchor="top"
           >
-            <>
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger className="hover:bg-primary/30 transition-all duration-300 py-1">
-                    <Pin fill="#ee3616" color="#ee3616" />
-                  </TooltipTrigger>
-                  <TooltipContent className={``}>
-                    <div className="text-white text-xs bg-black p-2 mt-1">
-                      {pointerLocation.fullAddress}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  onMouseEnter={() =>
+                    setToolTipVisible((prevState) => ({
+                      ...prevState,
+                      [i]: true,
+                    }))
+                  }
+                  onMouseLeave={() =>
+                    setToolTipVisible((prevState) => ({
+                      ...prevState,
+                      [i]: false,
+                    }))
+                  }
+                  className="hover:bg-primary/30 transition-all duration-300 py-1"
+                >
+                  <Circle size={14} fill="#ee4a2dd3" color="#ee3616a2" />
+                </TooltipTrigger>
+                <TooltipContent className={`max-w-[200px]`}>
+                  <div className="text-white text-xs bg-black p-2 mt-1 flex flex-wrap">
+                    <span className="text-wrap">{tracker.title}</span>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </Popup>
-        )}
+        ))}
     </Map>
   );
 };
